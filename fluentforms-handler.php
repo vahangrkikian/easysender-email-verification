@@ -101,8 +101,8 @@ if ( ! function_exists( 'easysender_fluentforms_validate_email_field' ) ) {
                 if ( $status === 'risky' ) {
                     $reason = $msg_risky;
                 } elseif ( $status !== '' ) {
-                    // translators: %s: Verification status returned by the API.
                     $reason = sprintf(
+                        // translators: %s: Verification status returned by the API.
                         __( 'This email is marked as %s and is not allowed by the current rules.', 'easysender-email-verification' ),
                         $status
                     );

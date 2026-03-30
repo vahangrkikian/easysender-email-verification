@@ -81,8 +81,8 @@ if ( ! function_exists( 'easysender_wp_registration_check_email' ) ) {
             if ( $status === 'risky' ) {
                 $reason = $msg_risky;
             } elseif ( $status !== '' ) {
-                // translators: %s: Verification status returned by the API.
                 $reason = sprintf(
+                    // translators: %s: Verification status returned by the API.
                     __( 'This email is marked as %s and is not allowed by the current rules.', 'easysender-email-verification' ),
                     $status
                 );
