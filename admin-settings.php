@@ -77,14 +77,6 @@ function easysender_add_admin_menu() {
         'easysender_settings_page'
     );
 
-    add_submenu_page(
-        'easysender_welcome',
-        'Domain Scanner',
-        'Domain Scanner',
-        'manage_options',
-        'easysender_domain_scanner',
-        'easysender_domain_scanner_page'
-    );
 }
 
 // Helpers for plugin checks
@@ -957,18 +949,6 @@ function easysender_low_balance_notice() {
 
 
 
-function easysender_domain_scanner_page() {
-    ?>
-    <div class="wrap">
-        <h1>Domain Scanner</h1>
-        <p>Launch the EasyDMARC Domain Scanner in a new tab to audit your domain.</p>
-        <p>
-            <a class="button button-primary" href="https://easydmarc.com/tools/domain-scanner" target="_blank" rel="noopener noreferrer">Open Domain Scanner</a>
-        </p>
-        <p class="description">For security, external scripts are not embedded directly inside wp-admin.</p>
-    </div>
-    <?php
-}
 
 // Add logo overlay markup & styles on plugin admin pages
 add_action('admin_footer', 'easysender_add_logo_overlay');
