@@ -1,0 +1,52 @@
+# Claude Code local settings
+.claude/
+
+# Composer
+vendor/
+composer.lock
+
+# NPM / Node
+node_modules/
+package-lock.json
+yarn.lock
+
+# Build output
+*.zip
+*.tar.gz
+dist/
+build/
+
+# IDE & editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*.orig
+nbproject/
+.sublime-project
+.sublime-workspace
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# WordPress debug logs
+*.log
+debug.log
+
+# Environment / secrets
+.env
+.env.local
+wp-config.php
+
+# Sass cache
+.sass-cache/
+
+# Source maps
+*.map
