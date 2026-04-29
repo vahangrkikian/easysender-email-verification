@@ -25,10 +25,6 @@ All verification requests are performed server-side — no JavaScript is sent to
 * Fluent Forms (free and Pro)
 * Gravity Forms
 * SureForms
-* WooCommerce Checkout
-* WordPress Registration Form
-* WooCommerce Checkout
-* WordPress Registration Form
 
 = How it works =
 
@@ -48,7 +44,7 @@ All verification requests are performed server-side — no JavaScript is sent to
 
 = Privacy =
 
-Email addresses are sent to `https://sender-api.easydmarc.com` for verification. See EasyDMARC's privacy policy at https://easydmarc.com/privacy-policy/ for details on how verification data is handled.
+Email addresses are sent to `https://sender-api.easydmarc.com` for verification. See EasyDMARC's legal and privacy information at https://easydmarc.com/legal for details on how verification data is handled.
 
 == Requirements ==
 

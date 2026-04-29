@@ -23,7 +23,7 @@ add_action('admin_enqueue_scripts', 'easysender_admin_enqueue_scripts');
 function easysender_admin_enqueue_scripts($hook) {
     if (strpos($hook, 'easysender') === false) return;
 
-    wp_enqueue_style('easysender-admin', plugins_url('assets/css/admin.css', __FILE__), [], '1.0.0');
+    wp_enqueue_style('easysender-admin', plugins_url('assets/css/admin.css', __FILE__), [], '1.1.0');
 
     // phpcs:ignore WordPress.Security.NonceVerification.Recommended
     $page = isset($_GET['page']) ? sanitize_key(wp_unslash($_GET['page'])) : '';
@@ -33,16 +33,27 @@ function easysender_admin_enqueue_scripts($hook) {
     if ($page !== 'easysender_settings') return;
 
     if ($tab === 'api') {
-        wp_enqueue_script('easysender-admin-api', plugins_url('assets/js/admin-api.js', __FILE__), [], '1.0.0', true);
+        wp_enqueue_script('easysender-admin-api', plugins_url('assets/js/admin-api.js', __FILE__), [], '1.1.0', true);
         wp_localize_script('easysender-admin-api', 'easysenderApiData', ['nonce' => wp_create_nonce('easysender_verify_api_key')]);
     }
     if ($tab === 'test') {
-        wp_enqueue_script('easysender-admin-test', plugins_url('assets/js/admin-test.js', __FILE__), [], '1.0.0', true);
+        wp_enqueue_style('easysender-admin-bulk-css', plugins_url('assets/css/admin-bulk.css', __FILE__), [], '1.1.0');
+        wp_enqueue_script('easysender-admin-test', plugins_url('assets/js/admin-test.js', __FILE__), [], '1.1.0', true);
         wp_localize_script('easysender-admin-test', 'easysenderTestData', ['nonce' => wp_create_nonce('easysender_test_email')]);
+        wp_enqueue_script('easysender-admin-bulk', plugins_url('assets/js/admin-bulk.js', __FILE__), [], '1.1.0', true);
+        wp_localize_script('easysender-admin-bulk', 'easysenderBulkData', ['nonce' => wp_create_nonce('easysender_bulk')]);
     }
     if ($tab === 'usage') {
-        wp_enqueue_script('easysender-admin-usage', plugins_url('assets/js/admin-usage.js', __FILE__), [], '1.0.7', true);
+        wp_enqueue_script('easysender-admin-usage', plugins_url('assets/js/admin-usage.js', __FILE__), [], '1.1.0', true);
         wp_localize_script('easysender-admin-usage', 'easysenderUsageData', ['nonce' => wp_create_nonce('easysender_get_usage')]);
+    }
+    if ($tab === 'plans') {
+        wp_enqueue_style('easysender-admin-bulk-css', plugins_url('assets/css/admin-bulk.css', __FILE__), [], '1.1.0');
+        wp_enqueue_script('easysender-admin-plans', plugins_url('assets/js/admin-plans.js', __FILE__), [], '1.1.0', true);
+        wp_localize_script('easysender-admin-plans', 'easysenderPlansData', [
+            'nonce'       => wp_create_nonce('easysender_plans'),
+            'usage_nonce' => wp_create_nonce('easysender_get_usage'),
+        ]);
     }
 }
 
@@ -540,7 +551,7 @@ function easysender_settings_page() {
         $active_tab = sanitize_key( wp_unslash( $_GET['tab'] ) );
     }
 
-    $allowed_tabs = [ 'api', 'usage', 'test', 'messages', 'documentation' ];
+    $allowed_tabs = [ 'api', 'usage', 'test', 'messages', 'documentation', 'plans' ];
     if ( ! in_array( $active_tab, $allowed_tabs, true ) ) {
         $active_tab = 'api';
     }
@@ -566,6 +577,9 @@ function easysender_settings_page() {
 
             <a href="<?php echo esc_url( add_query_arg( [ 'page' => 'easysender_settings', 'tab' => 'documentation' ], $base_url ) ); ?>"
                class="nav-tab <?php echo $active_tab === 'documentation' ? 'nav-tab-active' : ''; ?>">Documentation</a>
+
+            <a href="<?php echo esc_url( add_query_arg( [ 'page' => 'easysender_settings', 'tab' => 'plans' ], $base_url ) ); ?>"
+               class="nav-tab <?php echo $active_tab === 'plans' ? 'nav-tab-active' : ''; ?>">Buy Credits</a>
         </h2>
 
         <div style="margin-top:16px;">
@@ -615,19 +629,21 @@ function easysender_settings_page() {
                     <div style="max-width:900px;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:16px 20px;">
                         <h2 style="margin-top:0;">Documentation</h2>
                         <p>
-                            EasySender verifies email addresses using EasyDMARC’s API.
+                            EasySender verifies email addresses using EasyDMARC's API.
                             Configure your API credentials in the <strong>API Settings</strong> tab,
                             enable the integrations you want, and use <strong>Test Email</strong> to validate setup.
                         </p>
                         <ul style="margin:0 0 0 18px;">
                             <li><a href="https://sender-api.easydmarc.com/" target="_blank" rel="noopener noreferrer">API Docs</a></li>
-                            <li><a href="https://easydmarc.com/privacy-policy/" target="_blank" rel="noopener noreferrer">Privacy Policy</a></li>
-                            <li><a href="https://easydmarc.com/terms/" target="_blank" rel="noopener noreferrer">Terms &amp; Conditions</a></li>
+                            <li><a href="https://easydmarc.com/legal" target="_blank" rel="noopener noreferrer">Legal &amp; Privacy</a></li>
                         </ul>
                     </div>
                     <?php
                 }
                 ?>
+            <?php elseif ( $active_tab === 'plans' ) : ?>
+                <?php easysender_render_plans_tab(); ?>
+
             <?php endif; ?>
         </div>
     </div>
@@ -637,24 +653,97 @@ function easysender_settings_page() {
 
 function easysender_render_test_tab() {
     ?>
-    <div class="easysender-test-card">
-        <div class="easysender-test-header">🔬 Test a Sample Email</div>
-        <p class="easysender-subtle" style="margin:6px 0 0;">
-            Enter an email address below and click <strong>Verify Email Now</strong> to check it using EasyDMARC.
-        </p>
+    <!-- Section 1: Single Email Test -->
+    <div class="esb-section">
+        <h3 class="esb-section-title">
+            <?php esc_html_e( 'Test a Single Email Address', 'easysender-email-verification' ); ?>
+            <span class="esb-badge esb-badge-credit">1 CREDIT</span>
+        </h3>
+        <p class="esb-desc"><?php esc_html_e( 'Instantly verify any email address against our real-time API. Results show deliverability, format validity, domain health, and spam risk.', 'easysender-email-verification' ); ?></p>
 
-        <div class="easysender-row">
-            <input type="email" id="easysender-test-email" class="regular-text" placeholder="name@example.com" />
-            <button type="button" class="button button-primary" id="easysender-test-run">🔍 Verify Email Now</button>
+        <div class="esb-single-row">
+            <input type="email" id="esb-single-input" placeholder="e.g. hello@company.com" aria-label="<?php esc_attr_e( 'Email address to verify', 'easysender-email-verification' ); ?>" />
+            <button type="button" class="esb-btn esb-btn-primary" id="esb-single-btn"><?php esc_html_e( 'Verify Email', 'easysender-email-verification' ); ?></button>
         </div>
 
-        <div id="easysender-test-result" class="easysender-result" aria-live="polite">
-            <span class="easysender-subtle">Result will appear here…</span>
+        <div class="esb-result-area" id="esb-single-result" aria-live="polite">
+            <span style="color:var(--ed-text-tertiary);font-size:12px;"><?php esc_html_e( 'Result will appear here...', 'easysender-email-verification' ); ?></span>
+        </div>
+    </div>
+
+    <!-- Divider -->
+    <div class="esb-divider">
+        <div class="esb-divider-line"></div>
+        <span class="esb-divider-text"><?php esc_html_e( 'or verify a list in bulk', 'easysender-email-verification' ); ?></span>
+        <div class="esb-divider-line"></div>
+    </div>
+
+    <!-- Section 2: Bulk CSV Upload -->
+    <div class="esb-section">
+        <h3 class="esb-section-title">
+            <?php esc_html_e( 'Bulk Verify from CSV', 'easysender-email-verification' ); ?>
+            <span class="esb-badge esb-badge-new">NEW</span>
+        </h3>
+        <p class="esb-desc"><?php esc_html_e( 'Upload a CSV file containing email addresses. We\'ll verify the entire list and let you choose exactly which results to export. Uses 1 credit per email.', 'easysender-email-verification' ); ?></p>
+
+        <!-- Upload Mode Selector -->
+        <div class="esb-mode-cards">
+            <div class="esb-mode-card active" data-mode="header" tabindex="0" role="button">
+                <div class="esb-mode-card-title"><?php esc_html_e( 'CSV with header row', 'easysender-email-verification' ); ?></div>
+                <div class="esb-mode-card-desc"><?php esc_html_e( 'File has a header. Choose which column contains email addresses during upload.', 'easysender-email-verification' ); ?></div>
+            </div>
+            <div class="esb-mode-card" data-mode="plain" tabindex="0" role="button">
+                <div class="esb-mode-card-title"><?php esc_html_e( 'Plain email list (CSV)', 'easysender-email-verification' ); ?></div>
+                <div class="esb-mode-card-desc"><?php esc_html_e( 'One email address per row, no header row required.', 'easysender-email-verification' ); ?></div>
+            </div>
         </div>
 
-        <p class="easysender-subtle" style="margin-top:8px;">
-            (Optional tooltip: <span class="easysender-tooltip" title="Powered by EasyDMARC’s real-time verification engine">Powered by EasyDMARC’s real-time verification engine</span>)
-        </p>
+        <!-- Drop Zone -->
+        <div class="esb-dropzone" id="esb-dropzone" tabindex="0" role="button" aria-label="<?php esc_attr_e( 'Upload CSV file', 'easysender-email-verification' ); ?>">
+            <div class="esb-dropzone-icon">&uarr;</div>
+            <div class="esb-dropzone-headline"><?php esc_html_e( 'Drop your CSV file here', 'easysender-email-verification' ); ?></div>
+            <div class="esb-dropzone-sub">
+                <?php
+                printf(
+                    /* translators: %s: clickable browse link */
+                    esc_html__( 'Drag & drop your file, or %s.', 'easysender-email-verification' ),
+                    '<span class="esb-dropzone-link">' . esc_html__( 'browse to select a CSV', 'easysender-email-verification' ) . '</span>'
+                );
+                ?>
+            </div>
+            <div class="esb-dropzone-sub"><?php esc_html_e( 'Maximum 500,000 email addresses per upload.', 'easysender-email-verification' ); ?></div>
+            <span class="esb-dropzone-chip">.csv</span>
+            <div class="esb-dropzone-error" id="esb-dropzone-error" style="display:none;"></div>
+        </div>
+        <input type="file" id="esb-file-input" accept=".csv" style="display:none;" />
+
+        <!-- Preview (injected by JS) -->
+        <div id="esb-preview-wrap" style="display:none;"></div>
+
+        <!-- Progress (injected by JS) -->
+        <div id="esb-progress-wrap" style="display:none;"></div>
+
+        <!-- Results (injected by JS) -->
+        <div id="esb-results-wrap" style="display:none;"></div>
+    </div>
+
+    <!-- Format Guide -->
+    <div class="esb-format-guide">
+        <h4><?php esc_html_e( 'Accepted File Format — CSV Only', 'easysender-email-verification' ); ?></h4>
+        <div class="esb-format-grid">
+            <div>
+                <div class="esb-format-col-title"><?php esc_html_e( 'Single column (no header needed)', 'easysender-email-verification' ); ?></div>
+                <pre class="esb-format-pre">alice@acme.com
+bob@company.org
+carol@startup.io</pre>
+            </div>
+            <div>
+                <div class="esb-format-col-title"><?php esc_html_e( 'Multi-column CSV (with header row)', 'easysender-email-verification' ); ?></div>
+                <pre class="esb-format-pre">name,email,company
+Alice,alice@acme.com,Acme
+Bob,bob@company.org,Corp</pre>
+            </div>
+        </div>
     </div>
     <?php
 }
@@ -1052,4 +1141,143 @@ function easysender_verify_api_key() {
 }
 
 
+/**
+ * Render the Buy Credits tab.
+ */
+function easysender_render_plans_tab() {
+    ?>
+    <!-- Balance Strip -->
+    <div class="esb-balance-strip">
+        <div class="esb-balance-icon">&circledcirc;</div>
+        <div class="esb-balance-info">
+            <div class="esb-balance-label"><?php esc_html_e( 'CURRENT BALANCE', 'easysender-email-verification' ); ?></div>
+            <div id="esb-balance-area">
+                <span class="esb-skeleton" style="display:inline-block;width:80px;height:22px;"></span>
+                <span class="esb-balance-sub"><?php esc_html_e( 'credits remaining this month', 'easysender-email-verification' ); ?></span>
+            </div>
+        </div>
+        <div id="esb-balance-pill-area">
+            <span class="esb-skeleton" style="display:inline-block;width:120px;height:24px;border-radius:999px;"></span>
+        </div>
+    </div>
+
+    <!-- Section Heading -->
+    <div class="esb-plans-heading">
+        <h2><?php esc_html_e( 'Choose Your Monthly Verification Plan', 'easysender-email-verification' ); ?></h2>
+        <p><?php esc_html_e( 'Each plan gives you a monthly credit allowance — credits refresh automatically on your billing date. Upgrade, downgrade, or cancel anytime from your EasyDMARC account.', 'easysender-email-verification' ); ?></p>
+    </div>
+
+    <!-- Trust Badges -->
+    <div class="esb-trust-badges">
+        <span class="esb-trust-badge"><span class="esb-trust-check">&check;</span> <?php esc_html_e( 'Credits refresh monthly', 'easysender-email-verification' ); ?></span>
+        <span class="esb-trust-badge"><span class="esb-trust-check">&check;</span> <?php esc_html_e( 'Cancel anytime', 'easysender-email-verification' ); ?></span>
+        <span class="esb-trust-badge"><span class="esb-trust-check">&check;</span> <?php esc_html_e( 'Upgrade or downgrade anytime', 'easysender-email-verification' ); ?></span>
+        <span class="esb-trust-badge"><span class="esb-trust-check">&check;</span> <?php esc_html_e( 'Billed securely on EasyDMARC.com', 'easysender-email-verification' ); ?></span>
+    </div>
+
+    <!-- Subscription Notice Banner -->
+    <div class="esb-sub-notice">
+        <span class="esb-sub-notice-icon">&oplus;</span>
+        <div>
+            <strong><?php esc_html_e( 'These are monthly subscription plans, not one-time credits.', 'easysender-email-verification' ); ?></strong>
+            <?php esc_html_e( 'Your selected number of verifications is included every month, automatically. Subscription and billing are managed securely on', 'easysender-email-verification' ); ?>
+            <strong>EasyDMARC.com</strong> —
+            <?php
+            printf(
+                /* translators: %s: "Subscribe" button label reference */
+                esc_html__( 'clicking "%s" below will open your EasyDMARC account to complete checkout.', 'easysender-email-verification' ),
+                esc_html__( 'Subscribe', 'easysender-email-verification' )
+            );
+            ?>
+        </div>
+    </div>
+
+    <!-- Two-column layout -->
+    <div class="esb-plans-layout">
+        <!-- Left column -->
+        <div>
+            <!-- Package Grid (populated by JS) -->
+            <div class="esb-package-grid" id="esb-plans-grid">
+                <?php for ( $i = 0; $i < 7; $i++ ) : ?>
+                    <div class="esb-skeleton esb-skeleton-card"></div>
+                <?php endfor; ?>
+            </div>
+
+            <!-- Enterprise Row -->
+            <div class="esb-enterprise-row">
+                <div>
+                    <div class="esb-enterprise-heading"><?php esc_html_e( 'Need over 1,000,000 verifications / month?', 'easysender-email-verification' ); ?></div>
+                    <div class="esb-enterprise-sub"><?php esc_html_e( 'Custom volume pricing — typically 40–60% off. Talk to the team.', 'easysender-email-verification' ); ?></div>
+                </div>
+                <a href="https://easydmarc.com/contact-sales" target="_blank" rel="noopener noreferrer" class="esb-btn esb-btn-secondary" id="esb-contact-sales">
+                    <?php esc_html_e( 'Contact Sales', 'easysender-email-verification' ); ?> &rarr;
+                </a>
+            </div>
+
+            <!-- FAQ Strip -->
+            <div class="esb-faq-strip">
+                <div class="esb-faq-card">
+                    <div class="esb-faq-title"><?php esc_html_e( 'Do unused credits roll over?', 'easysender-email-verification' ); ?></div>
+                    <div class="esb-faq-body"><?php esc_html_e( "No — credits refresh each billing cycle. Unused credits from the previous month don't carry forward.", 'easysender-email-verification' ); ?></div>
+                </div>
+                <div class="esb-faq-card">
+                    <div class="esb-faq-title"><?php esc_html_e( 'Can I change plans?', 'easysender-email-verification' ); ?></div>
+                    <div class="esb-faq-body"><?php esc_html_e( 'Yes, upgrade or downgrade anytime from your EasyDMARC account. Changes take effect at the next billing cycle.', 'easysender-email-verification' ); ?></div>
+                </div>
+                <div class="esb-faq-card">
+                    <div class="esb-faq-title"><?php esc_html_e( 'Where do I manage billing?', 'easysender-email-verification' ); ?></div>
+                    <div class="esb-faq-body"><?php esc_html_e( 'All billing, invoices, and subscription settings live in your EasyDMARC account at easydmarc.com.', 'easysender-email-verification' ); ?></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right panel -->
+        <div class="esb-right-panel">
+            <div class="esb-selected-plan-card">
+                <div class="esb-selected-header"><?php esc_html_e( 'Selected Plan', 'easysender-email-verification' ); ?></div>
+                <div class="esb-selected-body" id="esb-right-panel-body">
+                    <div class="esb-skeleton esb-skeleton-line" style="width:60%;height:28px;"></div>
+                    <div class="esb-skeleton esb-skeleton-line" style="width:80%;"></div>
+                    <div class="esb-skeleton esb-skeleton-line" style="width:70%;"></div>
+                    <div class="esb-skeleton esb-skeleton-line" style="width:90%;"></div>
+                </div>
+            </div>
+
+            <!-- Redirect Notice -->
+            <div class="esb-redirect-notice">
+                <span class="esb-redirect-lock">&lock;</span>
+                <div>
+                    <?php
+                    printf(
+                        /* translators: %1$s: "Subscribe", %2$s: "EasyDMARC.com" (bold) */
+                        esc_html__( 'Clicking "%1$s" opens %2$s where you\'ll complete your subscription securely. Your plan will activate and sync back to this plugin instantly.', 'easysender-email-verification' ),
+                        esc_html__( 'Subscribe', 'easysender-email-verification' ),
+                        '<strong>EasyDMARC.com</strong>'
+                    );
+                    ?>
+                </div>
+            </div>
+
+            <!-- Subscribe Button -->
+            <button type="button" class="esb-subscribe-btn" id="esb-subscribe-btn" aria-label="<?php esc_attr_e( 'Subscribe — opens EasyDMARC.com', 'easysender-email-verification' ); ?>">
+                <?php esc_html_e( 'Subscribe', 'easysender-email-verification' ); ?> &nearrow;
+            </button>
+
+            <div class="esb-popup-fallback" id="esb-popup-fallback"></div>
+
+            <!-- Footnote -->
+            <div class="esb-footnote">
+                <?php
+                printf(
+                    /* translators: %1$s: easydmarc.com link, %2$s: Terms of Service link */
+                    esc_html__( "You'll be taken to %1\$s to complete checkout. By subscribing you agree to EasyDMARC's %2\$s.", 'easysender-email-verification' ),
+                    '<a href="https://easydmarc.com/" target="_blank" rel="noopener noreferrer">easydmarc.com</a>',
+                    '<a href="https://easydmarc.com/terms" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Terms of Service', 'easysender-email-verification' ) . '</a>'
+                );
+                ?>
+            </div>
+        </div>
+    </div>
+    <?php
+}
 
