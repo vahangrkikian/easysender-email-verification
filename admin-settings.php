@@ -1647,7 +1647,19 @@ function easysender_verify_api_key() {
     $json     = json_decode( $body_raw, true );
 
     if ( $code >= 200 && $code < 300 && is_array( $json ) && ! empty( $json['access_token'] ) ) {
-        wp_send_json_success( array( 'message' => __( 'Credentials are valid.', 'easysender-email-verification' ) ) );
+        // Save credentials on successful verification.
+        // Pass plaintext — the sanitize callback (easysender_settings_sanitize)
+        // registered via register_setting() will encrypt them automatically.
+        $existing = get_option( 'easysender_settings', array() );
+        $existing['client_id']     = $client_id;
+        $existing['client_secret'] = $client_secret;
+        update_option( 'easysender_settings', $existing );
+
+        // Clear any cached token so the new credentials take effect immediately
+        $id_hash = substr( md5( $client_id ), 0, 10 );
+        delete_transient( 'easysender_access_token_' . $id_hash );
+
+        wp_send_json_success( array( 'message' => __( 'Credentials verified and saved.', 'easysender-email-verification' ) ) );
     }
 
     $msg = '';

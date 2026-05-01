@@ -32,8 +32,9 @@
             .then(function (r) { return r.json(); })
             .then(function (data) {
                 if (data && data.success) {
-                    status.textContent = '\u2714 Verified';
-                    status.style.color = '#22863a';
+                    var successMsg = (data.data && data.data.message) ? data.data.message : 'Verified & saved';
+                    status.textContent = '\u2714 ' + successMsg;
+                    status.style.color = '#059669';
                 } else {
                     var msg = (data && data.data && data.data.message) ? data.data.message : 'Verification failed';
                     status.textContent = '\u2716 ' + msg;
