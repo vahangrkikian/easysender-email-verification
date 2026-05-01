@@ -4,7 +4,7 @@ Tags: email verification, spam prevention, contact form 7, elementor, wpforms
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -39,6 +39,8 @@ All verification requests are performed server-side — no JavaScript is sent to
 * **Allow on API error** — optionally permit submissions when the verification service is unavailable.
 * **Custom error messages** — set your own text for invalid, risky, and API-error scenarios.
 * **Test Email tab** — verify any address from the admin panel and inspect the raw API result.
+* **Bulk CSV verification** — upload a CSV file with up to 500,000 email addresses, verify them in bulk, view a visual breakdown (donut chart), and export filtered results as CSV.
+* **Buy Credits tab** — browse available EasySender plans, see your current balance, and subscribe directly from the WordPress admin.
 * **Credit usage dashboard** — see your allocated credits, current balance, and usage at a glance.
 * **Debug logging** — errors are written to `debug.log` (with email addresses redacted) when `WP_DEBUG_LOG` is enabled.
 
@@ -96,11 +98,21 @@ Please open a thread in the plugin's support forum on WordPress.org.
 
 1. API Settings tab — enter credentials, enable form integrations, and configure allowed statuses.
 2. Credit Usage dashboard — donut chart showing available balance and credits used.
-3. Test Email tab — verify any address and inspect the API result.
-4. Error Messages tab — customise the validation messages shown to visitors.
-5. Example of a blocked submission in Contact Form 7 with a field-level error message.
+3. Test Email tab — verify a single address and inspect the API result.
+4. Bulk CSV verification — upload a CSV, watch real-time progress, and review the results breakdown.
+5. Export modal — choose which statuses to include and download a filtered CSV.
+6. Buy Credits tab — browse plans, view your current balance, and subscribe.
+7. Error Messages tab — customise the validation messages shown to visitors.
+8. Example of a blocked submission in Contact Form 7 with a field-level error message.
 
 == Changelog ==
+
+= 1.1.0 =
+* New: Bulk CSV email verification — upload up to 500,000 addresses, verify in chunks, and view a visual breakdown with donut chart.
+* New: Export modal — filter results by status (deliverable, risky, undeliverable, unknown) with sub-filters (free account, role account, disposable, full inbox) and download as CSV.
+* New: Buy Credits tab — browse EasySender plans with pricing, see current balance, and subscribe directly from the admin panel.
+* New: Dynamic organisation ID retrieval via the EasySender /auth/me API endpoint (replaces hardcoded value).
+* Improved: Test Email tab redesigned with single-email test and bulk upload sections.
 
 = 1.0.0 =
 * Initial release.
@@ -115,6 +127,9 @@ Please open a thread in the plugin's support forum on WordPress.org.
 * Plugin data cleanup on uninstall.
 
 == Upgrade Notice ==
+
+= 1.1.0 =
+Adds bulk CSV verification, export, and a Buy Credits tab. No database changes — safe to update.
 
 = 1.0.0 =
 Initial release — no upgrade steps required.

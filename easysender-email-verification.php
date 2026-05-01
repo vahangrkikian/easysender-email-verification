@@ -3,7 +3,7 @@
 Plugin Name: EasySender Email Verification
 Plugin URI: https://easydmarc.com/easysender
 Description: Verifies emails using the EasyDMARC API across forms (Elementor, Contact Form 7, Gravity Forms, WooCommerce, WP registration).
-Version: 1.0.0
+Version: 1.1.0
 Author: Vahan Grkikian
 Author URI: https://easydmarc.com/
 Text Domain: easysender-email-verification
@@ -105,6 +105,8 @@ add_action('plugins_loaded', function () {
     // Core helpers (shared by admin and all form handlers)
     require_once EASYSENDER_PLUGIN_DIR . 'token-handler.php';
     require_once EASYSENDER_PLUGIN_DIR . 'includes/email-check.php';
+    require_once EASYSENDER_PLUGIN_DIR . 'includes/csv-handler.php';
+    require_once EASYSENDER_PLUGIN_DIR . 'includes/plans-data.php';
 
     // Admin UI & AJAX
     require_once EASYSENDER_PLUGIN_DIR . 'admin-settings.php';

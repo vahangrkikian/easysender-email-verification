@@ -206,58 +206,181 @@ if (!defined('EASYSENDER_VERIFY_URL')) define('EASYSENDER_VERIFY_URL', EASYSENDE
  */
 if (!defined('EASYSENDER_USAGE_URL'))  define('EASYSENDER_USAGE_URL',  EASYSENDER_API_BASE . '/api/v0.0/credit/stats');
 
-// Welcome page callback (with tabs)
+// Welcome page callback
 function easysender_welcome_page() {
-    $logo_url = plugins_url('assets/images/EasyDmarc.svg', __FILE__);
+    $options = get_option( 'easysender_settings', [] );
+
+    // Check if API credentials are saved
+    $has_credentials = ! empty( $options['client_id'] ) && ! empty( $options['client_secret'] );
+
+    // Check if any form integrations are enabled
+    $form_keys   = [ 'enable_cf7', 'enable_elementor', 'enable_wpforms', 'enable_ninjaforms', 'enable_fluentforms', 'enable_gravityforms', 'enable_sureforms' ];
+    $has_forms   = false;
+    foreach ( $form_keys as $fk ) {
+        if ( ! empty( $options[ $fk ] ) && $options[ $fk ] === '1' ) {
+            $has_forms = true;
+            break;
+        }
+    }
+
+    // Determine step statuses
+    // Step 2: API key
+    if ( $has_credentials ) {
+        $step2_status = 'done';
+    } else {
+        $step2_status = 'in_progress';
+    }
+
+    // Step 3: Forms
+    if ( $has_forms ) {
+        $step3_status = 'done';
+    } elseif ( $has_credentials ) {
+        $step3_status = 'in_progress';
+    } else {
+        $step3_status = 'pending';
+    }
+
+    // Determine if all setup is complete
+    $all_done = $has_credentials && $has_forms;
     ?>
-    <div class="wrap">
-        <a href="https://easydmarc.com/" target="_blank" rel="noopener noreferrer">
-            <img src="<?php echo esc_url($logo_url); ?>" alt="EasySender Logo" style="height:50px; vertical-align:middle; margin-right:10px;" />
-        </a>
-        <h1>Welcome to EasySender Email Verification</h1>
+    <div class="wrap es-wrap">
+        <h1><?php esc_html_e( 'EasySender', 'easysender-email-verification' ); ?></h1>
 
-        <h2 class="nav-tab-wrapper">
-            <a href="?page=easysender_welcome" class="nav-tab nav-tab-active">Welcome</a>
-            <a href="?page=easysender_settings&tab=api" class="nav-tab">Settings</a>
-        </h2>
+        <header class="es-pagehead">
+            <div class="es-pagehead__brand">
+                <div class="es-pagehead__mark" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg>
+                </div>
+                <div>
+                    <h2 class="es-pagehead__title"><?php esc_html_e( 'Welcome to EasySender', 'easysender-email-verification' ); ?></h2>
+                    <p class="es-pagehead__sub"><?php esc_html_e( 'Real-time email verification for your WordPress forms.', 'easysender-email-verification' ); ?></p>
+                </div>
+            </div>
+            <div class="es-pagehead__meta">
+                <a href="<?php echo esc_url( admin_url( 'admin.php?page=easysender_settings&tab=api' ) ); ?>" class="es-btn es-btn--secondary es-btn--sm"><?php esc_html_e( 'Open settings', 'easysender-email-verification' ); ?> &rarr;</a>
+            </div>
+        </header>
 
-        <div style="margin-top: 20px;">
-            <p>Thank you for installing EasySender! This plugin helps you verify email addresses directly from your WordPress site using EasyDMARC's API.</p>
-
-            <h2>Getting Started</h2>
-            <ol>
-                <li><strong><a href="https://app.easydmarc.com/register" target="_blank" rel="noopener noreferrer">Sign Up</a></strong> for an EasyDMARC account.</li>
-                <li><strong><a href="https://app.easydmarc.com/login" target="_blank" rel="noopener noreferrer">Sign In</a></strong>  to your account and switch to <strong> EasySender</strong>  (upper-left corner). From the left-hand <strong> Settings</strong>  menu, select <strong> API</strong> , then click <strong> Create API Key.</strong></li>
-                <li>Copy your API Client ID and Client Secret (or API Key).</li>
-                <li>
-                    Go to <strong>
-                        <a href="<?php echo esc_url( admin_url( 'admin.php?page=easysender_settings&tab=api' ) ); ?>">
-                            <?php esc_html_e( 'Settings', 'easysender-email-verification' ); ?>
-                        </a>
-                    </strong>
-                    <?php esc_html_e( 'and paste your credentials.', 'easysender-email-verification' ); ?>
-                </li>
-                <li>Configure other settings and start verifying emails!</li>
-            </ol>
-
-            <p>
-                <a href="https://app.easydmarc.com/login" target="_blank" rel="noopener noreferrer" class="button button-primary">Sign In</a>
-                <a href="https://app.easydmarc.com/register" target="_blank" rel="noopener noreferrer" class="button">Sign Up</a>
-            </p>
-
-            <h2>Resources</h2>
-            <ul>
-                <li><a href="https://easydmarc.com/easysender" target="_blank" rel="noopener noreferrer">Learn More About Email Deliverability</a></li>
-                <li><a href="https://sender-api.easydmarc.com/" target="_blank" rel="noopener noreferrer">EasyDMARC API Documentation</a></li>
-            </ul>
-
-            <p style="margin-top:30px;">
-                <a href="<?php echo esc_url( admin_url( 'admin.php?page=easysender_settings&tab=api' ) ); ?>"
-                        class="button button-primary button-large">
-                    <?php esc_html_e( 'Go to Settings', 'easysender-email-verification' ); ?>
-                </a>
-            </p>
+        <!-- Hero card -->
+        <div class="es-card" style="background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FF 100%); border-color: #E0E3FF;">
+            <div class="es-card__body" style="display: grid; grid-template-columns: 1fr 200px; gap: 32px; align-items: center;">
+                <div>
+                    <span class="es-pill es-pill--brand" style="margin-bottom: 12px;"><?php esc_html_e( 'Quick start', 'easysender-email-verification' ); ?></span>
+                    <h2 style="margin: 0 0 8px; font-size: 22px; font-weight: 700; letter-spacing: -0.015em;"><?php esc_html_e( 'Stop bad emails before they hit your forms.', 'easysender-email-verification' ); ?></h2>
+                    <p style="margin: 0 0 20px; color: var(--es-text-2); font-size: 14px; max-width: 56ch;"><?php esc_html_e( 'EasySender checks every submitted email address in real time — blocking typos, disposable inboxes, and undeliverable addresses across all your form plugins.', 'easysender-email-verification' ); ?></p>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <?php if ( $all_done ) : ?>
+                            <a href="<?php echo esc_url( admin_url( 'admin.php?page=easysender_settings&tab=test' ) ); ?>" class="es-btn es-btn--primary"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 8l3 3 7-7"/></svg><?php esc_html_e( 'Run a test email', 'easysender-email-verification' ); ?></a>
+                            <a href="<?php echo esc_url( admin_url( 'admin.php?page=easysender_settings&tab=usage' ) ); ?>" class="es-btn es-btn--secondary"><?php esc_html_e( 'View usage', 'easysender-email-verification' ); ?></a>
+                        <?php else : ?>
+                            <a href="<?php echo esc_url( admin_url( 'admin.php?page=easysender_settings&tab=api' ) ); ?>" class="es-btn es-btn--primary"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 8l3 3 7-7"/></svg><?php esc_html_e( 'Continue setup', 'easysender-email-verification' ); ?></a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <div style="display: grid; place-items: center;">
+                    <svg viewBox="0 0 220 160" width="100%" style="max-width: 200px;">
+                        <defs><linearGradient id="env-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#EEF0FF"/><stop offset="100%" stop-color="#E0E3FF"/></linearGradient></defs>
+                        <rect x="20" y="36" width="180" height="108" rx="10" fill="url(#env-grad)" stroke="#C7CBFF" stroke-width="1.5"/>
+                        <path d="M20 46l90 60 90-60" fill="none" stroke="#A5ABF5" stroke-width="1.5"/>
+                        <circle cx="172" cy="44" r="18" fill="#fff" stroke="#10B981" stroke-width="2"/>
+                        <path d="M164 44l6 6 10-10" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            </div>
         </div>
+
+        <!-- Setup checklist -->
+        <h3 style="margin: 28px 0 12px; font-size: 13px; font-weight: 600; color: var(--es-text-2); text-transform: uppercase; letter-spacing: 0.05em;"><?php esc_html_e( 'Setup checklist', 'easysender-email-verification' ); ?></h3>
+        <div class="es-grid es-grid--3">
+            <!-- Step 1: Install plugin — always done -->
+            <div class="es-card"><div class="es-card__body">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+                    <span style="width: 32px; height: 32px; border-radius: 8px; background: var(--es-success-50); color: var(--es-success); display: grid; place-items: center;"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8l3 3 7-7"/></svg></span>
+                    <span class="es-pill es-pill--success"><?php esc_html_e( 'Done', 'easysender-email-verification' ); ?></span>
+                </div>
+                <h4 style="margin: 0 0 4px; font-size: 14.5px; font-weight: 600;"><?php esc_html_e( '1. Install plugin', 'easysender-email-verification' ); ?></h4>
+                <p style="margin: 0; font-size: 13px; color: var(--es-text-2);"><?php esc_html_e( 'EasySender is active and ready to configure.', 'easysender-email-verification' ); ?></p>
+            </div></div>
+
+            <!-- Step 2: Connect API key -->
+            <a href="<?php echo esc_url( admin_url( 'admin.php?page=easysender_settings&tab=api' ) ); ?>" class="es-card es-quick"><div class="es-card__body">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+                    <?php if ( $has_credentials ) : ?>
+                        <span style="width: 32px; height: 32px; border-radius: 8px; background: var(--es-success-50); color: var(--es-success); display: grid; place-items: center;"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8l3 3 7-7"/></svg></span>
+                    <?php else : ?>
+                        <span style="width: 32px; height: 32px; border-radius: 8px; background: var(--es-primary-50); color: var(--es-primary); display: grid; place-items: center; font-weight: 700;">2</span>
+                    <?php endif; ?>
+                </div>
+                <h4 style="margin: 0 0 4px; font-size: 14.5px; font-weight: 600;"><?php esc_html_e( '2. API Settings', 'easysender-email-verification' ); ?> &rarr;</h4>
+                <p style="margin: 0; font-size: 13px; color: var(--es-text-2);"><?php esc_html_e( 'Configure your API credentials and verification rules.', 'easysender-email-verification' ); ?></p>
+            </div></a>
+
+            <!-- Step 3: Pick forms -->
+            <a href="<?php echo esc_url( admin_url( 'admin.php?page=easysender_settings&tab=api' ) ); ?>" class="es-card es-quick"><div class="es-card__body">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
+                    <?php if ( $has_forms ) : ?>
+                        <span style="width: 32px; height: 32px; border-radius: 8px; background: var(--es-success-50); color: var(--es-success); display: grid; place-items: center;"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8l3 3 7-7"/></svg></span>
+                    <?php else : ?>
+                        <span style="width: 32px; height: 32px; border-radius: 8px; background: var(--es-neutral-50); color: var(--es-text-2); display: grid; place-items: center; font-weight: 700;">3</span>
+                    <?php endif; ?>
+                </div>
+                <h4 style="margin: 0 0 4px; font-size: 14.5px; font-weight: 600;"><?php esc_html_e( '3. Form Integrations', 'easysender-email-verification' ); ?> &rarr;</h4>
+                <p style="margin: 0; font-size: 13px; color: var(--es-text-2);"><?php esc_html_e( 'Enable verification on Contact Form 7, WPForms, and others.', 'easysender-email-verification' ); ?></p>
+            </div></a>
+        </div>
+
+        <!-- How to get API keys -->
+        <div class="es-card" style="margin-top: 16px;">
+            <div class="es-card__head">
+                <h2 class="es-card__title"><?php esc_html_e( 'How to get your API credentials', 'easysender-email-verification' ); ?></h2>
+                <p class="es-card__sub"><?php esc_html_e( 'Follow these steps to connect EasySender to your site.', 'easysender-email-verification' ); ?></p>
+            </div>
+            <div class="es-card__body">
+                <ol style="margin: 0; padding: 0 0 0 20px; font-size: 13.5px; color: var(--es-text-2); line-height: 1.8;">
+                    <li><a href="https://app.easydmarc.com/register" target="_blank" rel="noopener noreferrer" style="color: var(--es-primary); font-weight: 600;"><?php esc_html_e( 'Sign up', 'easysender-email-verification' ); ?></a> <?php esc_html_e( 'for an EasyDMARC account.', 'easysender-email-verification' ); ?></li>
+                    <li><a href="https://app.easydmarc.com/login" target="_blank" rel="noopener noreferrer" style="color: var(--es-primary); font-weight: 600;"><?php esc_html_e( 'Sign in', 'easysender-email-verification' ); ?></a> <?php esc_html_e( 'to your account and switch to EasySender (upper-left corner). From the left-hand Settings menu, select API, then click Create API Key.', 'easysender-email-verification' ); ?></li>
+                    <li><?php esc_html_e( 'Copy your API Client ID and Client Secret (API Key).', 'easysender-email-verification' ); ?></li>
+                    <li><?php
+                        printf(
+                            /* translators: %s: link to settings page */
+                            esc_html__( 'Go to %s and paste your credentials.', 'easysender-email-verification' ),
+                            '<a href="' . esc_url( admin_url( 'admin.php?page=easysender_settings&tab=api' ) ) . '" style="color: var(--es-primary); font-weight: 600;">' . esc_html__( 'API Settings', 'easysender-email-verification' ) . '</a>'
+                        );
+                    ?></li>
+                    <li><?php esc_html_e( 'Enable your form integrations and start verifying emails!', 'easysender-email-verification' ); ?></li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Quick actions -->
+        <h3 style="margin: 32px 0 12px; font-size: 13px; font-weight: 600; color: var(--es-text-2); text-transform: uppercase; letter-spacing: 0.05em;"><?php esc_html_e( 'Quick actions', 'easysender-email-verification' ); ?></h3>
+        <div class="es-grid es-grid--3">
+            <?php if ( $has_credentials ) : ?>
+            <a href="<?php echo esc_url( admin_url( 'admin.php?page=easysender_settings&tab=test' ) ); ?>" class="es-card es-quick"><div class="es-card__body">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: var(--es-primary); margin-bottom: 10px;"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                <h4 style="margin: 0 0 4px; font-size: 14px; font-weight: 600;"><?php esc_html_e( 'Run a test email', 'easysender-email-verification' ); ?> &rarr;</h4>
+                <p style="margin: 0; font-size: 12.5px; color: var(--es-text-2);"><?php esc_html_e( 'Verify a single address or upload a CSV.', 'easysender-email-verification' ); ?></p>
+            </div></a>
+            <?php else : ?>
+            <a href="<?php echo esc_url( admin_url( 'admin.php?page=easysender_settings&tab=api' ) ); ?>" class="es-card es-quick"><div class="es-card__body">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: var(--es-primary); margin-bottom: 10px;"><circle cx="6" cy="12" r="2"/><path d="M8 12h12M17 8l5 4-5 4"/></svg>
+                <h4 style="margin: 0 0 4px; font-size: 14px; font-weight: 600;"><?php esc_html_e( 'Connect API key', 'easysender-email-verification' ); ?> &rarr;</h4>
+                <p style="margin: 0; font-size: 12.5px; color: var(--es-text-2);"><?php esc_html_e( 'Enter your EasySender credentials to get started.', 'easysender-email-verification' ); ?></p>
+            </div></a>
+            <?php endif; ?>
+            <a href="<?php echo esc_url( admin_url( 'admin.php?page=easysender_settings&tab=usage' ) ); ?>" class="es-card es-quick"><div class="es-card__body">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: var(--es-primary); margin-bottom: 10px;"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-5"/></svg>
+                <h4 style="margin: 0 0 4px; font-size: 14px; font-weight: 600;"><?php esc_html_e( 'View usage', 'easysender-email-verification' ); ?> &rarr;</h4>
+                <p style="margin: 0; font-size: 12.5px; color: var(--es-text-2);"><?php esc_html_e( 'Track verification credits and trends.', 'easysender-email-verification' ); ?></p>
+            </div></a>
+            <a href="<?php echo esc_url( admin_url( 'admin.php?page=easysender_settings&tab=documentation' ) ); ?>" class="es-card es-quick"><div class="es-card__body">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: var(--es-primary); margin-bottom: 10px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                <h4 style="margin: 0 0 4px; font-size: 14px; font-weight: 600;"><?php esc_html_e( 'Read the docs', 'easysender-email-verification' ); ?> &rarr;</h4>
+                <p style="margin: 0; font-size: 12.5px; color: var(--es-text-2);"><?php esc_html_e( 'API reference, integration guides, FAQ.', 'easysender-email-verification' ); ?></p>
+            </div></a>
+        </div>
+
+        <p class="es-footnote"><?php esc_html_e( 'EasySender Email Verification', 'easysender-email-verification' ); ?> &middot; v<?php echo esc_html( defined( 'EASYSENDER_VERSION' ) ? EASYSENDER_VERSION : '1.0.0' ); ?></p>
     </div>
     <?php
 }
@@ -414,23 +537,35 @@ function easysender_error_field_render( $args ) {
 
     $id    = isset( $args['id'] ) ? (string) $args['id'] : '';
     $value = isset( $options[ $id ] ) ? (string) $options[ $id ] : '';
+
+    $defaults = [
+        'msg_invalid'   => __( 'Invalid email address.', 'easysender-email-verification' ),
+        'msg_risky'     => __( 'Risky email address.', 'easysender-email-verification' ),
+        'msg_api_error' => __( 'Verification error. Please try again.', 'easysender-email-verification' ),
+    ];
+    $placeholder = isset( $defaults[ $id ] ) ? $defaults[ $id ] : '';
     ?>
     <input
-            type="text"
-            name="easysender_error_messages[<?php echo esc_attr( $id ); ?>]"
-            value="<?php echo esc_attr( $value ); ?>"
-            class="regular-text"
+        type="text"
+        name="easysender_error_messages[<?php echo esc_attr( $id ); ?>]"
+        value="<?php echo esc_attr( $value ); ?>"
+        class="regular-text"
+        placeholder="<?php echo esc_attr( $placeholder ); ?>"
     />
+    <p class="description"><?php
+        /* translators: %s: default message text */
+        printf( esc_html__( 'Default: %s', 'easysender-email-verification' ), '<code>' . esc_html( $placeholder ) . '</code>' );
+    ?></p>
     <?php
 }
 
 
 function easysender_api_key_actions_render() {
     ?>
-    <div style="margin: 8px 0 2px;">
-        <button type="button" class="button button-secondary" id="easysender-verify-api-key">Verify API Key</button>
-        <a href="https://app.easydmarc.com/login" target="_blank" rel="noopener noreferrer" class="button">Generate Key</a>
-        <span id="easysender-verify-status" style="margin-left:8px;"></span>
+    <div class="es-api-actions">
+        <button type="button" id="easysender-verify-api-key"><?php esc_html_e( 'Verify API Key', 'easysender-email-verification' ); ?></button>
+        <a href="https://app.easydmarc.com/login" target="_blank" rel="noopener noreferrer" class="button"><?php esc_html_e( 'Generate Key', 'easysender-email-verification' ); ?></a>
+        <span id="easysender-verify-status"></span>
     </div>
     <?php
 }
@@ -440,7 +575,7 @@ function easysender_integrations_render() {
     $checks = easysender_plugin_checks();
 
     ?>
-    <div class="easysender-integration-grid" style="display:grid; gap:10px; max-width:640px;">
+    <div class="es-integrations-grid">
         <?php foreach ( $checks as $code => $info ) :
             $key       = isset( $info['key'] ) ? (string) $info['key'] : '';
             $label     = isset( $info['label'] ) ? (string) $info['label'] : '';
@@ -453,32 +588,25 @@ function easysender_integrations_render() {
 
             $note = '';
             if ( ! $available ) {
-                $note = __( ' (not available in this version)', 'easysender-email-verification' );
+                $note = __( 'Not available yet', 'easysender-email-verification' );
             } elseif ( ! $installed ) {
-                $note = __( ' (not installed)', 'easysender-email-verification' );
+                $note = __( 'Not installed', 'easysender-email-verification' );
             } elseif ( ! $active ) {
-                $note = __( ' (installed, not active)', 'easysender-email-verification' );
+                $note = __( 'Not active', 'easysender-email-verification' );
             }
             ?>
-            <label style="display:flex; align-items:center; gap:8px;">
+            <label class="es-integration-item">
                 <input type="hidden" name="easysender_settings[<?php echo esc_attr( $key ); ?>]" value="0" />
-
                 <input
-                        type="checkbox"
-                        name="easysender_settings[<?php echo esc_attr( $key ); ?>]"
-                        value="1"
+                    type="checkbox"
+                    name="easysender_settings[<?php echo esc_attr( $key ); ?>]"
+                    value="1"
                     <?php checked( $is_set, true ); ?>
                     <?php disabled( $is_disabled, true ); ?>
                 />
-
-                <span <?php echo $is_disabled ? 'style="' . esc_attr( 'opacity:.6;' ) . '"' : ''; ?>>
-					<?php echo esc_html( '✅ ' . $label ); ?>
-				</span>
-
+                <span class="es-integration-name"><?php echo esc_html( $label ); ?></span>
                 <?php if ( $note ) : ?>
-                    <span style="opacity:.6; font-style:italic; margin-left:6px;">
-						<?php echo esc_html( $note ); ?>
-					</span>
+                    <span class="es-integration-note"><?php echo esc_html( $note ); ?></span>
                 <?php endif; ?>
             </label>
         <?php endforeach; ?>
@@ -557,56 +685,63 @@ function easysender_settings_page() {
     }
 
     $base_url = admin_url( 'admin.php' );
+
+    // SVG icons for tabs (inline, no external assets)
+    $tab_icons = [
+        'api'           => '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="6" cy="8" r="2"/><path d="M8 8h6M11 6l3 2-3 2"/></svg>',
+        'usage'         => '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 14h12M3 11l3-3 3 2 4-5"/></svg>',
+        'test'          => '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M14 8L9 3v3H2v4h7v3l5-5z"/></svg>',
+        'messages'      => '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11v.01"/></svg>',
+        'documentation' => '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 13.5A1.5 1.5 0 0 1 4.5 12H13"/><path d="M4.5 2H13v12H4.5A1.5 1.5 0 0 1 3 12.5v-9A1.5 1.5 0 0 1 4.5 2z"/></svg>',
+        'plans'         => '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 5h12l-1.5 7.5h-9z"/><circle cx="6" cy="14" r="0.8"/><circle cx="11" cy="14" r="0.8"/></svg>',
+    ];
+    $tab_labels = [
+        'api'           => __( 'API Settings', 'easysender-email-verification' ),
+        'usage'         => __( 'Logging &amp; Usage', 'easysender-email-verification' ),
+        'test'          => __( 'Test Email', 'easysender-email-verification' ),
+        'messages'      => __( 'Error Messages', 'easysender-email-verification' ),
+        'documentation' => __( 'Documentation', 'easysender-email-verification' ),
+        'plans'         => __( 'Buy Credits', 'easysender-email-verification' ),
+    ];
     ?>
-    <div class="wrap">
-        <h1>EasySender Email Verification Settings</h1>
-        <p>Connect Your EasyDMARC Account</p>
+    <div class="wrap es-wrap">
+        <h1><?php esc_html_e( 'EasySender Settings', 'easysender-email-verification' ); ?></h1>
 
-        <h2 class="nav-tab-wrapper">
-            <a href="<?php echo esc_url( add_query_arg( [ 'page' => 'easysender_settings', 'tab' => 'api' ], $base_url ) ); ?>"
-               class="nav-tab <?php echo $active_tab === 'api' ? 'nav-tab-active' : ''; ?>">API Settings</a>
+        <header class="es-pagehead">
+            <div class="es-pagehead__brand">
+                <div class="es-pagehead__mark" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9 6 9-6"/><rect x="3" y="5" width="18" height="14" rx="2"/></svg>
+                </div>
+                <div>
+                    <h2 class="es-pagehead__title"><?php esc_html_e( 'EasySender Settings', 'easysender-email-verification' ); ?></h2>
+                    <p class="es-pagehead__sub"><?php esc_html_e( 'Configure how email verification runs on your forms.', 'easysender-email-verification' ); ?></p>
+                </div>
+            </div>
+        </header>
 
-            <a href="<?php echo esc_url( add_query_arg( [ 'page' => 'easysender_settings', 'tab' => 'usage' ], $base_url ) ); ?>"
-               class="nav-tab <?php echo $active_tab === 'usage' ? 'nav-tab-active' : ''; ?>">Logging &amp; Usage</a>
+        <nav class="es-tabs" role="tablist" aria-label="<?php esc_attr_e( 'Settings tabs', 'easysender-email-verification' ); ?>">
+            <?php foreach ( $allowed_tabs as $tab_key ) : ?>
+                <a href="<?php echo esc_url( add_query_arg( [ 'page' => 'easysender_settings', 'tab' => $tab_key ], $base_url ) ); ?>"
+                   class="es-tab <?php echo $active_tab === $tab_key ? 'is-active' : ''; ?>"
+                   role="tab"
+                   <?php echo $active_tab === $tab_key ? 'aria-current="page"' : ''; ?>>
+                    <?php echo $tab_icons[ $tab_key ]; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG ?>
+                    <?php echo $tab_labels[ $tab_key ]; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already translated ?>
+                </a>
+            <?php endforeach; ?>
+        </nav>
 
-            <a href="<?php echo esc_url( add_query_arg( [ 'page' => 'easysender_settings', 'tab' => 'test' ], $base_url ) ); ?>"
-               class="nav-tab <?php echo $active_tab === 'test' ? 'nav-tab-active' : ''; ?>">Test Email</a>
-
-            <a href="<?php echo esc_url( add_query_arg( [ 'page' => 'easysender_settings', 'tab' => 'messages' ], $base_url ) ); ?>"
-               class="nav-tab <?php echo $active_tab === 'messages' ? 'nav-tab-active' : ''; ?>">Error Messages</a>
-
-            <a href="<?php echo esc_url( add_query_arg( [ 'page' => 'easysender_settings', 'tab' => 'documentation' ], $base_url ) ); ?>"
-               class="nav-tab <?php echo $active_tab === 'documentation' ? 'nav-tab-active' : ''; ?>">Documentation</a>
-
-            <a href="<?php echo esc_url( add_query_arg( [ 'page' => 'easysender_settings', 'tab' => 'plans' ], $base_url ) ); ?>"
-               class="nav-tab <?php echo $active_tab === 'plans' ? 'nav-tab-active' : ''; ?>">Buy Credits</a>
-        </h2>
-
-        <div style="margin-top:16px;">
+        <div class="es-tab-content">
             <?php if ( $active_tab === 'api' ) : ?>
-                <form method="post" action="options.php">
-                    <?php
-                    settings_fields( 'easysender_settings_group' );
-                    do_settings_sections( 'easysender_settings' );
-                    submit_button();
-                    ?>
-                </form>
+                <?php easysender_render_api_tab(); ?>
 
             <?php elseif ( $active_tab === 'messages' ) : ?>
-                <form method="post" action="options.php">
-                    <?php
-                    settings_fields( 'easysender_error_group' );
-                    do_settings_sections( 'easysender_error_settings' );
-                    submit_button();
-                    ?>
-                </form>
+                <?php easysender_render_messages_tab(); ?>
 
             <?php elseif ( $active_tab === 'test' ) : ?>
                 <?php
                 if ( function_exists( 'easysender_render_test_tab' ) ) {
                     easysender_render_test_tab();
-                } else {
-                    echo '<p style="color:#b91c1c;">Test tab renderer is missing.</p>';
                 }
                 ?>
 
@@ -614,37 +749,402 @@ function easysender_settings_page() {
                 <?php
                 if ( function_exists( 'easysender_render_usage_tab' ) ) {
                     easysender_render_usage_tab();
-                } else {
-                    echo '<p style="color:#b91c1c;">Usage tab renderer is missing.</p>';
                 }
                 ?>
 
             <?php elseif ( $active_tab === 'documentation' ) : ?>
-                <?php
-                if ( function_exists( 'easysender_render_documentation_tab' ) ) {
-                    easysender_render_documentation_tab();
-                } else {
-                    // Simple fallback so tab is never blank
-                    ?>
-                    <div style="max-width:900px;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:16px 20px;">
-                        <h2 style="margin-top:0;">Documentation</h2>
-                        <p>
-                            EasySender verifies email addresses using EasyDMARC's API.
-                            Configure your API credentials in the <strong>API Settings</strong> tab,
-                            enable the integrations you want, and use <strong>Test Email</strong> to validate setup.
-                        </p>
-                        <ul style="margin:0 0 0 18px;">
-                            <li><a href="https://sender-api.easydmarc.com/" target="_blank" rel="noopener noreferrer">API Docs</a></li>
-                            <li><a href="https://easydmarc.com/legal" target="_blank" rel="noopener noreferrer">Legal &amp; Privacy</a></li>
-                        </ul>
-                    </div>
-                    <?php
-                }
-                ?>
+                <?php easysender_render_documentation_tab_default(); ?>
+
             <?php elseif ( $active_tab === 'plans' ) : ?>
                 <?php easysender_render_plans_tab(); ?>
 
             <?php endif; ?>
+        </div>
+
+        <p class="es-footnote"><?php esc_html_e( 'EasySender', 'easysender-email-verification' ); ?> &middot; v<?php echo esc_html( defined( 'EASYSENDER_VERSION' ) ? EASYSENDER_VERSION : '1.0.0' ); ?> &middot; <a href="<?php echo esc_url( add_query_arg( [ 'page' => 'easysender_settings', 'tab' => 'documentation' ], $base_url ) ); ?>"><?php esc_html_e( 'Documentation', 'easysender-email-verification' ); ?></a></p>
+    </div>
+    <?php
+}
+
+/**
+ * Render the API Settings tab with design-system cards.
+ * Uses settings_fields() for nonce but renders fields manually.
+ */
+function easysender_render_api_tab() {
+    $options = get_option( 'easysender_settings', [] );
+    $checks  = easysender_plugin_checks();
+
+    // Decrypt for display
+    $client_id     = ! empty( $options['client_id'] ) ? easysender_decrypt( $options['client_id'] ) : '';
+    $client_secret = ! empty( $options['client_secret'] ) ? easysender_decrypt( $options['client_secret'] ) : '';
+
+    $defaults = [
+        'allow_deliverable'   => '1',
+        'allow_risky'         => '1',
+        'allow_undeliverable' => '0',
+        'allow_unknown'       => '0',
+        'allow_on_api_error'  => '0',
+    ];
+
+    $result_types = [
+        'allow_deliverable'   => [
+            'label' => __( 'Deliverable', 'easysender-email-verification' ),
+            'desc'  => __( 'Mailbox confirmed — safe to send.', 'easysender-email-verification' ),
+            'color' => 'success',
+            'icon'  => '<svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8l3 3 7-7"/></svg>',
+        ],
+        'allow_risky'         => [
+            'label' => __( 'Risky', 'easysender-email-verification' ),
+            'desc'  => __( 'Catch-all, role-based, or low-confidence — accept at your discretion.', 'easysender-email-verification' ),
+            'color' => 'warning',
+            'icon'  => '<svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 2l7 12H1z"/><path d="M8 6v4M8 12v.01"/></svg>',
+        ],
+        'allow_undeliverable' => [
+            'label' => __( 'Undeliverable', 'easysender-email-verification' ),
+            'desc'  => __( 'Address bounces — strongly recommend rejecting.', 'easysender-email-verification' ),
+            'color' => 'danger',
+            'icon'  => '<svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg>',
+        ],
+        'allow_unknown'       => [
+            'label' => __( 'Unknown', 'easysender-email-verification' ),
+            'desc'  => __( 'Provider couldn\'t be reached — accept to avoid blocking valid users.', 'easysender-email-verification' ),
+            'color' => 'neutral',
+            'icon'  => '<svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M6 6c0-1 1-2 2-2s2 1 2 2-2 1.5-2 3M8 12v.01"/></svg>',
+        ],
+    ];
+    ?>
+    <form method="post" action="options.php">
+        <?php settings_fields( 'easysender_settings_group' ); ?>
+
+        <!-- API Credentials -->
+        <div class="es-card">
+            <div class="es-card__head">
+                <h2 class="es-card__title"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="6" cy="8" r="2"/><path d="M8 8h6M11 6l3 2-3 2"/></svg><?php esc_html_e( 'API credentials', 'easysender-email-verification' ); ?></h2>
+                <p class="es-card__sub"><?php esc_html_e( 'Connect this site to your EasySender account. Generate or rotate keys from your dashboard.', 'easysender-email-verification' ); ?></p>
+            </div>
+            <div class="es-card__body">
+                <div class="es-grid es-grid--2">
+                    <div class="es-field">
+                        <label class="es-label" for="es-client-id"><?php esc_html_e( 'Client ID', 'easysender-email-verification' ); ?></label>
+                        <input id="es-client-id" class="es-input es-input--mono" type="text" name="easysender_settings[client_id]" value="<?php echo esc_attr( $client_id ); ?>" autocomplete="off">
+                    </div>
+                    <div class="es-field">
+                        <label class="es-label" for="es-client-secret"><?php esc_html_e( 'Client secret (API key)', 'easysender-email-verification' ); ?></label>
+                        <div class="es-input-affix">
+                            <input id="es-client-secret" class="es-input es-input--mono" type="password" name="easysender_settings[client_secret]" value="<?php echo esc_attr( $client_secret ); ?>" autocomplete="off">
+                            <button type="button" class="es-input-affix__btn" onclick="var i=document.getElementById('es-client-secret');var s=i.type==='text';i.type=s?'password':'text';this.textContent=s?'Show':'Hide';"><?php esc_html_e( 'Show', 'easysender-email-verification' ); ?></button>
+                        </div>
+                        <span class="es-help"><?php esc_html_e( 'Kept encrypted in wp_options. Never exposed to the front-end.', 'easysender-email-verification' ); ?></span>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; align-items: center;">
+                    <button type="button" class="es-btn es-btn--primary" id="easysender-verify-api-key"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 8l3 3 7-7"/></svg><?php esc_html_e( 'Verify API key', 'easysender-email-verification' ); ?></button>
+                    <a href="https://app.easydmarc.com/login" target="_blank" rel="noopener noreferrer" class="es-btn es-btn--secondary"><?php esc_html_e( 'Generate new key', 'easysender-email-verification' ); ?></a>
+                    <span id="easysender-verify-status" style="font-size: 13px;"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Integrations -->
+        <div class="es-card">
+            <div class="es-card__head">
+                <h2 class="es-card__title"><?php esc_html_e( 'Form integrations', 'easysender-email-verification' ); ?></h2>
+                <p class="es-card__sub"><?php esc_html_e( 'Choose which form plugins should run email verification before submission.', 'easysender-email-verification' ); ?></p>
+            </div>
+            <div class="es-card__body">
+                <div class="es-grid es-grid--3">
+                    <?php
+                    $integration_colors = [
+                        'cf7'             => '#3B82F6',
+                        'elementor'       => '#92003C',
+                        'wpforms'         => '#E1306C',
+                        'ninjaforms'      => '#0EA5E9',
+                        'fluentforms'     => '#7C3AED',
+                        'gravityforms'    => '#F59E0B',
+                        'sureforms'       => '#10B981',
+                        'woocommerce'     => '#7F54B3',
+                        'wp_registration' => '#1E293B',
+                    ];
+                    $integration_abbrevs = [
+                        'cf7'             => 'CF',
+                        'elementor'       => 'EL',
+                        'wpforms'         => 'WP',
+                        'ninjaforms'      => 'NF',
+                        'fluentforms'     => 'FF',
+                        'gravityforms'    => 'GF',
+                        'sureforms'       => 'SF',
+                        'woocommerce'     => 'WC',
+                        'wp_registration' => 'WP',
+                    ];
+                    foreach ( $checks as $code => $info ) :
+                        $key       = isset( $info['key'] ) ? (string) $info['key'] : '';
+                        $label     = isset( $info['label'] ) ? (string) $info['label'] : '';
+                        $is_set    = ( ! empty( $options[ $key ] ) && $options[ $key ] === '1' );
+                        $installed = ! empty( $info['installed'] );
+                        $active    = ! empty( $info['active'] );
+                        $available = ! empty( $info['available'] );
+                        $is_disabled = ( ! $installed || ! $active || ! $available );
+
+                        $meta = '';
+                        if ( ! $available ) {
+                            $meta = __( 'Not available yet', 'easysender-email-verification' );
+                        } elseif ( ! $installed ) {
+                            $meta = __( 'Not installed', 'easysender-email-verification' );
+                        } elseif ( ! $active ) {
+                            $meta = __( 'Not active', 'easysender-email-verification' );
+                        }
+
+                        $color  = $integration_colors[ $code ] ?? '#64748B';
+                        $abbrev = $integration_abbrevs[ $code ] ?? strtoupper( substr( $code, 0, 2 ) );
+                        $card_class = 'es-int-card';
+                        if ( $is_set && ! $is_disabled ) $card_class .= ' is-on';
+                        if ( $is_disabled ) $card_class .= ' is-disabled';
+                    ?>
+                    <label class="<?php echo esc_attr( $card_class ); ?>">
+                        <span class="es-int-card__logo" style="background: <?php echo esc_attr( $color ); ?>;"><?php echo esc_html( $abbrev ); ?></span>
+                        <div class="es-int-card__body">
+                            <div class="es-int-card__name"><?php echo esc_html( $label ); ?></div>
+                            <?php if ( $meta ) : ?>
+                                <div class="es-int-card__meta"><?php echo esc_html( $meta ); ?></div>
+                            <?php endif; ?>
+                        </div>
+                        <input type="hidden" name="easysender_settings[<?php echo esc_attr( $key ); ?>]" value="0" />
+                        <label class="es-toggle">
+                            <input type="checkbox" name="easysender_settings[<?php echo esc_attr( $key ); ?>]" value="1" <?php checked( $is_set, true ); ?> <?php disabled( $is_disabled, true ); ?>>
+                            <span class="es-toggle__track"></span>
+                        </label>
+                    </label>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+
+        <!-- Allowed Verification Results -->
+        <div class="es-card">
+            <div class="es-card__head">
+                <h2 class="es-card__title"><?php esc_html_e( 'Allowed verification results', 'easysender-email-verification' ); ?></h2>
+                <p class="es-card__sub"><?php esc_html_e( 'Email statuses you accept. Anything else is rejected with your custom error message.', 'easysender-email-verification' ); ?></p>
+            </div>
+            <div class="es-card__body" style="padding: 0;">
+                <ul style="list-style: none; margin: 0; padding: 0;">
+                    <?php
+                    $last_key = array_key_last( $result_types );
+                    foreach ( $result_types as $rt_key => $rt ) :
+                        $rt_val = isset( $options[ $rt_key ] ) ? $options[ $rt_key ] : ( $defaults[ $rt_key ] ?? '0' );
+                        $is_last = ( $rt_key === $last_key );
+                    ?>
+                    <li class="es-result-row" <?php echo $is_last ? 'style="border-bottom: 0;"' : ''; ?>>
+                        <span class="es-result-row__icon" style="background: var(--es-<?php echo esc_attr( $rt['color'] ); ?>-50); color: var(--es-<?php echo esc_attr( $rt['color'] ); ?>);">
+                            <?php echo $rt['icon']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG ?>
+                        </span>
+                        <div class="es-result-row__body">
+                            <div class="es-result-row__title"><?php echo esc_html( $rt['label'] ); ?></div>
+                            <div class="es-result-row__desc"><?php echo esc_html( $rt['desc'] ); ?></div>
+                        </div>
+                        <input type="hidden" name="easysender_settings[<?php echo esc_attr( $rt_key ); ?>]" value="0" />
+                        <label class="es-toggle">
+                            <input type="checkbox" name="easysender_settings[<?php echo esc_attr( $rt_key ); ?>]" value="1" <?php checked( $rt_val, '1' ); ?>>
+                            <span class="es-toggle__track"></span>
+                        </label>
+                    </li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Allow on API Error -->
+        <?php $aoe_val = isset( $options['allow_on_api_error'] ) ? $options['allow_on_api_error'] : ( $defaults['allow_on_api_error'] ?? '0' ); ?>
+        <div class="es-alert es-alert--warning" style="margin-top: 16px; align-items: flex-start;">
+            <svg class="es-alert__icon" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 2l8 14H1z"/><path d="M9 7v4M9 13v.01"/></svg>
+            <div class="es-alert__body" style="display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+                <div>
+                    <p class="es-alert__title"><?php esc_html_e( 'Allow submission if verification is unavailable', 'easysender-email-verification' ); ?></p>
+                    <p class="es-alert__text"><?php esc_html_e( 'If our API times out or returns an error, accept the submission anyway. Recommended to keep forms working during outages.', 'easysender-email-verification' ); ?></p>
+                </div>
+                <input type="hidden" name="easysender_settings[allow_on_api_error]" value="0" />
+                <label class="es-toggle">
+                    <input type="checkbox" name="easysender_settings[allow_on_api_error]" value="1" <?php checked( $aoe_val, '1' ); ?>>
+                    <span class="es-toggle__track"></span>
+                </label>
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px;">
+            <?php submit_button( __( 'Save changes', 'easysender-email-verification' ), 'primary', 'submit', false ); ?>
+        </div>
+    </form>
+    <?php
+}
+
+/**
+ * Render the Error Messages tab with design-system cards.
+ */
+function easysender_render_messages_tab() {
+    $options = get_option( 'easysender_error_messages', [] );
+    $msgs = [
+        'msg_invalid'   => [
+            'label'   => __( 'Invalid email message', 'easysender-email-verification' ),
+            'desc'    => __( 'Shown when format is malformed or the address bounces.', 'easysender-email-verification' ),
+            'default' => __( 'Invalid email address.', 'easysender-email-verification' ),
+            'color'   => 'danger',
+            'icon'    => '<svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg>',
+        ],
+        'msg_risky'     => [
+            'label'   => __( 'Risky email message', 'easysender-email-verification' ),
+            'desc'    => __( 'Shown when the address is catch-all, role-based, or low-confidence.', 'easysender-email-verification' ),
+            'default' => __( 'Risky email address.', 'easysender-email-verification' ),
+            'color'   => 'warning',
+            'icon'    => '<svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 2l7 12H1z"/><path d="M8 6v4M8 12v.01"/></svg>',
+        ],
+        'msg_api_error' => [
+            'label'   => __( 'API error message', 'easysender-email-verification' ),
+            'desc'    => __( 'Shown if our service is unreachable. Only seen when "allow on error" is off.', 'easysender-email-verification' ),
+            'default' => __( 'Verification error. Please try again.', 'easysender-email-verification' ),
+            'color'   => 'neutral',
+            'icon'    => '<svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11v.01"/></svg>',
+        ],
+    ];
+    ?>
+    <form method="post" action="options.php">
+        <?php settings_fields( 'easysender_error_group' ); ?>
+
+        <div class="es-card">
+            <div class="es-card__head">
+                <h2 class="es-card__title"><?php esc_html_e( 'Custom error messages', 'easysender-email-verification' ); ?></h2>
+                <p class="es-card__sub"><?php esc_html_e( 'Shown to visitors when their email fails verification. Keep them short and actionable.', 'easysender-email-verification' ); ?></p>
+            </div>
+            <div class="es-card__body" style="padding: 0;">
+                <ul style="list-style: none; margin: 0; padding: 0;">
+                    <?php
+                    $last_key = array_key_last( $msgs );
+                    foreach ( $msgs as $msg_key => $msg ) :
+                        $value   = isset( $options[ $msg_key ] ) ? (string) $options[ $msg_key ] : '';
+                        $is_last = ( $msg_key === $last_key );
+                    ?>
+                    <li class="es-msg-row" <?php echo $is_last ? 'style="border-bottom: 0;"' : ''; ?>>
+                        <span class="es-msg-row__icon" style="background: var(--es-<?php echo esc_attr( $msg['color'] ); ?>-50); color: var(--es-<?php echo esc_attr( $msg['color'] ); ?>);">
+                            <?php echo $msg['icon']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG ?>
+                        </span>
+                        <div class="es-msg-row__body">
+                            <div class="es-msg-row__head">
+                                <div>
+                                    <div class="es-msg-row__title"><?php echo esc_html( $msg['label'] ); ?></div>
+                                    <div class="es-msg-row__desc"><?php echo esc_html( $msg['desc'] ); ?></div>
+                                </div>
+                            </div>
+                            <input class="es-input" type="text" name="easysender_error_messages[<?php echo esc_attr( $msg_key ); ?>]" value="<?php echo esc_attr( $value ); ?>" placeholder="<?php echo esc_attr( $msg['default'] ); ?>">
+                        </div>
+                    </li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px;">
+            <?php submit_button( __( 'Save changes', 'easysender-email-verification' ), 'primary', 'submit', false ); ?>
+        </div>
+    </form>
+    <?php
+}
+
+/**
+ * Render the Documentation tab with resource cards.
+ */
+function easysender_render_documentation_tab_default() {
+    if ( function_exists( 'easysender_render_documentation_tab' ) ) {
+        easysender_render_documentation_tab();
+        return;
+    }
+
+    $checks = function_exists( 'easysender_plugin_checks' ) ? easysender_plugin_checks() : [];
+    ?>
+    <!-- Resource cards -->
+    <div class="es-grid es-grid--2">
+        <a href="https://sender-api.easydmarc.com/" target="_blank" rel="noopener noreferrer" class="es-card es-doc-card"><div class="es-card__body">
+            <span class="es-doc-card__icon" style="background: var(--es-primary-50); color: var(--es-primary);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></span>
+            <h3 class="es-doc-card__title"><?php esc_html_e( 'API documentation', 'easysender-email-verification' ); ?> <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 3h7v7M13 3l-9 9"/></svg></h3>
+            <p class="es-doc-card__desc"><?php esc_html_e( 'Endpoints, parameters, response codes, and rate limits for the EasySender verification API.', 'easysender-email-verification' ); ?></p>
+        </div></a>
+        <a href="https://easydmarc.com/legal" target="_blank" rel="noopener noreferrer" class="es-card es-doc-card"><div class="es-card__body">
+            <span class="es-doc-card__icon" style="background: var(--es-success-50); color: var(--es-success);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/></svg></span>
+            <h3 class="es-doc-card__title"><?php esc_html_e( 'Legal &amp; privacy', 'easysender-email-verification' ); ?> <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 3h7v7M13 3l-9 9"/></svg></h3>
+            <p class="es-doc-card__desc"><?php esc_html_e( 'GDPR, data processing addendum, terms of service, and how we handle email data.', 'easysender-email-verification' ); ?></p>
+        </div></a>
+        <a href="https://easydmarc.com/easysender" target="_blank" rel="noopener noreferrer" class="es-card es-doc-card"><div class="es-card__body">
+            <span class="es-doc-card__icon" style="background: var(--es-warning-50); color: var(--es-warning);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.5 9.5a2.5 2.5 0 0 1 5 0c0 1.5-2.5 2-2.5 3.5M12 17v.01"/></svg></span>
+            <h3 class="es-doc-card__title"><?php esc_html_e( 'Support &amp; FAQ', 'easysender-email-verification' ); ?> <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 3h7v7M13 3l-9 9"/></svg></h3>
+            <p class="es-doc-card__desc"><?php esc_html_e( 'Troubleshooting common issues, integration guides, and contact form for our team.', 'easysender-email-verification' ); ?></p>
+        </div></a>
+        <a href="<?php echo esc_url( admin_url( 'admin.php?page=easysender_settings&tab=api' ) ); ?>" class="es-card es-doc-card"><div class="es-card__body">
+            <span class="es-doc-card__icon" style="background: var(--es-neutral-50); color: var(--es-neutral);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg></span>
+            <h3 class="es-doc-card__title"><?php esc_html_e( 'Quick start guide', 'easysender-email-verification' ); ?> <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 3h7v7M13 3l-9 9"/></svg></h3>
+            <p class="es-doc-card__desc"><?php esc_html_e( 'Configure your API credentials and enable form integrations.', 'easysender-email-verification' ); ?></p>
+        </div></a>
+    </div>
+
+    <?php if ( ! empty( $checks ) ) : ?>
+    <!-- Supported plugins -->
+    <div class="es-card" style="margin-top: 16px;">
+        <div class="es-card__head">
+            <h2 class="es-card__title"><?php esc_html_e( 'Supported form plugins', 'easysender-email-verification' ); ?></h2>
+            <p class="es-card__sub"><?php esc_html_e( 'Auto-detected on this site. Enable them in the API Settings tab.', 'easysender-email-verification' ); ?></p>
+        </div>
+        <div class="es-card__body">
+            <div class="es-grid es-grid--3">
+                <?php foreach ( $checks as $info ) :
+                    $available = ! empty( $info['available'] );
+                    $installed = ! empty( $info['installed'] );
+                    $pill_class = 'es-pill--neutral';
+                    $pill_label = __( 'Not available', 'easysender-email-verification' );
+                    if ( $available && $installed ) {
+                        $pill_class = 'es-pill--success';
+                        $pill_label = __( 'Compatible', 'easysender-email-verification' );
+                    } elseif ( $available && ! $installed ) {
+                        $pill_class = 'es-pill--neutral';
+                        $pill_label = __( 'Not installed', 'easysender-email-verification' );
+                    }
+                ?>
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border: 1px solid var(--es-border); border-radius: var(--es-radius-sm); background: #fff;">
+                    <div>
+                        <div style="font-weight: 600; font-size: 13.5px;"><?php echo esc_html( $info['label'] ); ?></div>
+                    </div>
+                    <span class="es-pill <?php echo esc_attr( $pill_class ); ?>"><?php echo esc_html( $pill_label ); ?></span>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
+
+    <!-- FAQ -->
+    <div class="es-card">
+        <div class="es-card__head">
+            <h2 class="es-card__title"><?php esc_html_e( 'Quick reference', 'easysender-email-verification' ); ?></h2>
+            <p class="es-card__sub"><?php esc_html_e( 'Common questions answered without leaving this page.', 'easysender-email-verification' ); ?></p>
+        </div>
+        <div class="es-card__body" style="padding: 0;">
+            <details class="es-faq" open>
+                <summary><?php esc_html_e( 'How accurate is verification?', 'easysender-email-verification' ); ?></summary>
+                <div><?php esc_html_e( 'Most addresses come back deliverable or undeliverable with high confidence. Catch-all domains and some corporate mailservers return "risky" — accept those at your discretion.', 'easysender-email-verification' ); ?></div>
+            </details>
+            <details class="es-faq">
+                <summary><?php esc_html_e( 'Does verification slow down my forms?', 'easysender-email-verification' ); ?></summary>
+                <div><?php esc_html_e( 'Average API latency is under 500 ms. Verification runs server-side during form submission, so users typically don\'t notice.', 'easysender-email-verification' ); ?></div>
+            </details>
+            <details class="es-faq">
+                <summary><?php esc_html_e( 'What happens if my credits run out mid-month?', 'easysender-email-verification' ); ?></summary>
+                <div><?php esc_html_e( 'Submissions either pass through or are blocked depending on your "Allow on API error" setting. We recommend enabling that fallback to keep forms working.', 'easysender-email-verification' ); ?></div>
+            </details>
+            <details class="es-faq">
+                <summary><?php esc_html_e( 'Can I use EasySender with a custom form plugin?', 'easysender-email-verification' ); ?></summary>
+                <div><?php
+                    printf(
+                        /* translators: %s: function name */
+                        esc_html__( 'Yes — call %s from your form\'s validation hook. It returns a structured result with status, reason, and details.', 'easysender-email-verification' ),
+                        '<code style="font-family: var(--es-font-mono); background: var(--es-neutral-50); padding: 1px 6px; border-radius: 4px;">easysender_do_email_check($email)</code>'
+                    );
+                ?></div>
+            </details>
         </div>
     </div>
     <?php
@@ -877,35 +1377,66 @@ function easysender_test_email() {
 
 
 function easysender_render_usage_tab() {
+    $base_url = admin_url( 'admin.php' );
     ?>
-    <div class="easysender-usage-card">
-        <div class="easysender-usage-header">📊 Verification Statistics &amp; Limits</div>
-        <p class="easysender-usage-subtle">Live credit stats from EasyDMARC.</p>
+    <!-- Stat tiles (populated by JS) -->
+    <div class="es-grid es-grid--3" id="easysender-stat-tiles">
+        <div class="es-stat"><span class="es-stat__label"><?php esc_html_e( 'Allocated this period', 'easysender-email-verification' ); ?></span><span class="es-stat__value"><span class="easysender-skeleton" style="display:inline-block;width:80px;height:28px;"></span></span><span class="es-stat__meta">&nbsp;</span></div>
+        <div class="es-stat"><span class="es-stat__label"><?php esc_html_e( 'Used', 'easysender-email-verification' ); ?></span><span class="es-stat__value"><span class="easysender-skeleton" style="display:inline-block;width:50px;height:28px;"></span></span><span class="es-stat__meta">&nbsp;</span></div>
+        <div class="es-stat"><span class="es-stat__label"><?php esc_html_e( 'Remaining', 'easysender-email-verification' ); ?></span><span class="es-stat__value"><span class="easysender-skeleton" style="display:inline-block;width:70px;height:28px;"></span></span><span class="es-stat__meta">&nbsp;</span></div>
+    </div>
 
-        <div id="easysender-usage-block">
-            <!-- skeleton state -->
-            <div class="es-usage-visual">
-                <div class="es-donut-wrap">
-                    <svg class="es-donut" viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="44" fill="none" stroke="#f3f4f6" stroke-width="13"/>
-                        <circle cx="50" cy="50" r="44" fill="none" stroke="#e5e7eb" stroke-width="13" stroke-dasharray="276 276"/>
+    <!-- Donut chart card (populated by JS) -->
+    <div class="es-card" style="margin-top: 16px;">
+        <div class="es-card__head">
+            <h2 class="es-card__title"><?php esc_html_e( 'Verification activity', 'easysender-email-verification' ); ?></h2>
+            <p class="es-card__sub"><?php esc_html_e( 'Live credit usage from EasySender', 'easysender-email-verification' ); ?></p>
+        </div>
+        <div class="es-card__body" id="easysender-usage-block">
+            <!-- skeleton state replaced by JS -->
+            <div style="display: grid; grid-template-columns: 220px 1fr; gap: 32px; align-items: center;">
+                <div style="display: grid; place-items: center; position: relative;">
+                    <svg viewBox="0 0 120 120" width="200" height="200">
+                        <circle cx="60" cy="60" r="48" fill="none" stroke="var(--es-neutral-50,#F1F5F9)" stroke-width="14"/>
+                        <circle cx="60" cy="60" r="48" fill="none" stroke="var(--es-neutral-100,#E2E8F0)" stroke-width="14" stroke-dasharray="1 301.6" stroke-linecap="round" transform="rotate(-90 60 60)"/>
                     </svg>
-                    <div class="es-donut-inner">
-                        <div class="easysender-skeleton" style="height:18px;width:54px;margin-bottom:4px;"></div>
-                        <div class="es-donut-sub">credits left</div>
+                    <div style="position: absolute; text-align: center;">
+                        <div class="easysender-skeleton" style="width:70px;height:28px;margin:0 auto 4px;"></div>
+                        <div style="font-size: 12px; color: var(--es-text-2);"><?php esc_html_e( 'credits left', 'easysender-email-verification' ); ?></div>
                     </div>
                 </div>
-                <div class="es-legend">
-                    <div class="es-legend-row"><div class="es-legend-dot" style="background:#2563eb"></div><div><div class="easysender-skeleton" style="height:14px;width:70px;"></div><div class="es-legend-lbl">Credits available</div></div></div>
-                    <div class="es-legend-row"><div class="es-legend-dot" style="background:#e5e7eb;border:1px solid #d1d5db"></div><div><div class="easysender-skeleton" style="height:14px;width:40px;"></div><div class="es-legend-lbl">Credits used</div></div></div>
-                    <div class="es-legend-row"><div class="es-legend-dot" style="background:#bfdbfe"></div><div><div class="easysender-skeleton" style="height:14px;width:60px;"></div><div class="es-legend-lbl">Allocated this period</div></div></div>
+                <div>
+                    <div style="display: grid; gap: 14px;">
+                        <div style="display: flex; gap: 12px; align-items: flex-start;"><span style="width:10px;height:10px;border-radius:999px;background:var(--es-primary);margin-top:6px;flex-shrink:0;"></span><div style="flex:1;"><div style="display:flex;justify-content:space-between;font-weight:600;"><span><?php esc_html_e( 'Available', 'easysender-email-verification' ); ?></span><span class="easysender-skeleton" style="width:50px;height:14px;"></span></div><div style="font-size:12.5px;color:var(--es-text-2);"><?php esc_html_e( 'Use for email verification across all enabled forms.', 'easysender-email-verification' ); ?></div></div></div>
+                        <div style="display: flex; gap: 12px; align-items: flex-start;"><span style="width:10px;height:10px;border-radius:999px;background:var(--es-text-3);margin-top:6px;flex-shrink:0;"></span><div style="flex:1;"><div style="display:flex;justify-content:space-between;font-weight:600;"><span><?php esc_html_e( 'Used', 'easysender-email-verification' ); ?></span><span class="easysender-skeleton" style="width:40px;height:14px;"></span></div><div style="font-size:12.5px;color:var(--es-text-2);"><?php esc_html_e( 'Verifications sent in the current billing cycle.', 'easysender-email-verification' ); ?></div></div></div>
+                        <div style="display: flex; gap: 12px; align-items: flex-start;"><span style="width:10px;height:10px;border-radius:2px;background:var(--es-neutral-100);margin-top:6px;flex-shrink:0;"></span><div style="flex:1;"><div style="display:flex;justify-content:space-between;font-weight:600;"><span><?php esc_html_e( 'Allocated', 'easysender-email-verification' ); ?></span><span class="easysender-skeleton" style="width:60px;height:14px;"></span></div><div style="font-size:12.5px;color:var(--es-text-2);"><?php esc_html_e( 'Total credits in current cycle.', 'easysender-email-verification' ); ?></div></div></div>
+                    </div>
+                    <hr class="es-divider" style="margin: 18px 0;">
+                    <div style="display:flex;justify-content:space-between;font-size:12.5px;color:var(--es-text-2);margin-bottom:6px;">
+                        <span class="easysender-skeleton" style="width:120px;height:12px;"></span>
+                        <span class="easysender-skeleton" style="width:30px;height:12px;"></span>
+                    </div>
+                    <div class="es-progress"><div class="es-progress__bar" style="width: 0%;"></div></div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="easysender-usage-cta">
-            <a href="https://easydmarc.com/pricing/easysender/email-verification" target="_blank" rel="noopener noreferrer" class="button button-primary">Upgrade Plan for More Verifications</a>
-            <a href="https://sender.easydmarc.com/email-verification/api-single" target="_blank" rel="noopener noreferrer" class="button">View Detailed Logs in Dashboard</a>
+    <!-- Dark CTA banner -->
+    <div class="es-card" style="margin-top: 16px; background: linear-gradient(135deg, #0F172A 0%, #1E1B4B 100%); border: 0; color: #fff;">
+        <div class="es-card__body" style="display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center;">
+            <div>
+                <span class="es-pill" style="background: rgba(255,255,255,0.12); color: #C7D2FE; border-color: rgba(255,255,255,0.16);"><?php esc_html_e( 'Need more capacity?', 'easysender-email-verification' ); ?></span>
+                <h3 style="margin: 10px 0 4px; font-size: 18px; font-weight: 600;">
+                    <?php esc_html_e( 'Larger plans drop to $0.0004 per verification.', 'easysender-email-verification' ); ?>
+                </h3>
+                <p style="margin: 0; color: rgba(255,255,255,0.7); font-size: 13.5px;">
+                    <?php esc_html_e( 'Upgrade anytime — credits and pricing update on next billing cycle.', 'easysender-email-verification' ); ?>
+                </p>
+            </div>
+            <div>
+                <a class="es-btn" href="<?php echo esc_url( add_query_arg( [ 'page' => 'easysender_settings', 'tab' => 'plans' ], $base_url ) ); ?>" style="background: #fff; color: var(--es-primary-700, #3730A3);"><?php esc_html_e( 'Upgrade plan', 'easysender-email-verification' ); ?> &rarr;</a>
+            </div>
         </div>
     </div>
     <?php
@@ -1272,7 +1803,7 @@ function easysender_render_plans_tab() {
                     /* translators: %1$s: easydmarc.com link, %2$s: Terms of Service link */
                     esc_html__( "You'll be taken to %1\$s to complete checkout. By subscribing you agree to EasyDMARC's %2\$s.", 'easysender-email-verification' ),
                     '<a href="https://easydmarc.com/" target="_blank" rel="noopener noreferrer">easydmarc.com</a>',
-                    '<a href="https://easydmarc.com/terms" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Terms of Service', 'easysender-email-verification' ) . '</a>'
+                    '<a href="https://easydmarc.com/legal" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Terms of Service', 'easysender-email-verification' ) . '</a>'
                 );
                 ?>
             </div>
