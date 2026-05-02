@@ -152,6 +152,7 @@
 .esb-detail-value { font-size: 12px; font-weight: 600; }
 .esb-detail-positive { color: #16A34A; }
 .esb-detail-negative { color: #DC2626; }
+.esb-detail-warning  { color: #D97706; }
 .esb-detail-neutral  { color: #6B7180; }
 
 /* ---- Divider ---- */

@@ -44,7 +44,8 @@
                 else if (st==='unknown'){ pillClass='esb-pill-unknown'; pillLabel='? Unknown'; }
 
                 var details = d.details || {};
-                var formatValid = (st !== 'invalid_format') ? 'Valid' : 'Invalid';
+                var typeLabel = st.charAt(0).toUpperCase() + st.slice(1);
+                if (st === 'invalid_format') typeLabel = 'Invalid Format';
                 var mxActive = 'Unknown';
                 if (details.mx_found !== undefined) mxActive = details.mx_found ? 'Active' : 'No MX';
                 else if (details.has_mx !== undefined) mxActive = details.has_mx ? 'Active' : 'No MX';
@@ -56,14 +57,15 @@
                 if (details.disposable !== undefined) disposable = details.disposable ? 'Yes' : 'No';
 
                 function valClass(v) {
-                    if (['Valid','Active','Clean','No'].indexOf(v)!==-1) return 'esb-detail-positive';
-                    if (['Invalid','No MX','Flagged','Yes'].indexOf(v)!==-1) return 'esb-detail-negative';
+                    if (['Deliverable','Active','Clean','No'].indexOf(v)!==-1) return 'esb-detail-positive';
+                    if (['Undeliverable','Invalid Format','No MX','Flagged','Yes'].indexOf(v)!==-1) return 'esb-detail-negative';
+                    if (['Risky'].indexOf(v)!==-1) return 'esb-detail-warning';
                     return 'esb-detail-neutral';
                 }
 
                 var html = '<div class="esb-result-row"><span class="esb-result-email">'+esc(email)+'</span><span class="esb-status-pill '+pillClass+'">'+pillLabel+'</span></div>';
                 html += '<div class="esb-detail-grid">';
-                html += '<div class="esb-detail-item"><div class="esb-detail-label">Format</div><div class="esb-detail-value '+valClass(formatValid)+'">'+formatValid+'</div></div>';
+                html += '<div class="esb-detail-item"><div class="esb-detail-label">Type</div><div class="esb-detail-value '+valClass(typeLabel)+'">'+typeLabel+'</div></div>';
                 html += '<div class="esb-detail-item"><div class="esb-detail-label">Domain MX</div><div class="esb-detail-value '+valClass(mxActive)+'">'+mxActive+'</div></div>';
                 html += '<div class="esb-detail-item"><div class="esb-detail-label">Spam Trap</div><div class="esb-detail-value '+valClass(spamTrap)+'">'+spamTrap+'</div></div>';
                 html += '<div class="esb-detail-item"><div class="esb-detail-label">Disposable</div><div class="esb-detail-value '+valClass(disposable)+'">'+disposable+'</div></div>';
