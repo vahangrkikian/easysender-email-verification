@@ -96,14 +96,13 @@ Please open a thread in the plugin's support forum on WordPress.org.
 
 == Screenshots ==
 
-1. API Settings tab — enter credentials, enable form integrations, and configure allowed statuses.
-2. Credit Usage dashboard — donut chart showing available balance and credits used.
-3. Test Email tab — verify a single address and inspect the API result.
-4. Bulk CSV verification — upload a CSV, watch real-time progress, and review the results breakdown.
-5. Export modal — choose which statuses to include and download a filtered CSV.
-6. Buy Credits tab — browse plans, view your current balance, and subscribe.
-7. Error Messages tab — customise the validation messages shown to visitors.
-8. Example of a blocked submission in Contact Form 7 with a field-level error message.
+1. Welcome screen — setup checklist, quick-start guide, and API credential instructions.
+2. API Settings tab — enter credentials, enable form integrations, and configure allowed statuses.
+3. Logging & Usage tab — credit usage dashboard with donut chart showing allocated, used, and remaining credits.
+4. Test Email tab — verify a single address or upload a CSV for bulk verification.
+5. Error Messages tab — customise the validation messages shown to visitors.
+6. Documentation tab — quick links to API docs, legal & privacy, support, and supported form plugins list.
+7. Buy Credits tab — browse monthly verification plans, see current balance, and subscribe.
 
 == Changelog ==
 

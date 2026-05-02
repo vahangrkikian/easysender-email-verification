@@ -17,6 +17,9 @@ yarn.lock
 dist/
 build/
 
+# WordPress.org submission folder
+easysender-email-verification/
+
 # IDE & editor files
 .idea/
 .vscode/

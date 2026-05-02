@@ -7,6 +7,9 @@ Version: 1.1.0
 Author: Vahan Grkikian
 Author URI: https://easydmarc.com/
 Text Domain: easysender-email-verification
+Domain Path: /languages
+Requires at least: 5.8
+Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
@@ -15,6 +18,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 if (!defined('ABSPATH')) exit;
 
 // Core constants
+define('EASYSENDER_VERSION', '1.1.0');
 define('EASYSENDER_PLUGIN_FILE', __FILE__);
 define('EASYSENDER_PLUGIN_DIR', plugin_dir_path(__FILE__));
 

@@ -1,0 +1,829 @@
+# Copyright (C) 2026 Vahan Grkikian
+# This file is distributed under the GPLv2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: EasySender Email Verification 1.1.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/easysender-email-verification\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-05-02T23:17:36+03:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: easysender-email-verification\n"
+
+#. Plugin Name of the plugin
+#: easysender-email-verification.php
+#: admin-settings.php:383
+msgid "EasySender Email Verification"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: easysender-email-verification.php
+msgid "https://easydmarc.com/easysender"
+msgstr ""
+
+#. Description of the plugin
+#: easysender-email-verification.php
+msgid "Verifies emails using the EasyDMARC API across forms (Elementor, Contact Form 7, Gravity Forms, WooCommerce, WP registration)."
+msgstr ""
+
+#. Author of the plugin
+#: easysender-email-verification.php
+msgid "Vahan Grkikian"
+msgstr ""
+
+#. Author URI of the plugin
+#: easysender-email-verification.php
+msgid "https://easydmarc.com/"
+msgstr ""
+
+#: admin-settings.php:247
+#: admin-settings.php:764
+msgid "EasySender"
+msgstr ""
+
+#: admin-settings.php:255
+msgid "Welcome to EasySender"
+msgstr ""
+
+#: admin-settings.php:256
+msgid "Real-time email verification for your WordPress forms."
+msgstr ""
+
+#: admin-settings.php:260
+msgid "Open settings"
+msgstr ""
+
+#: admin-settings.php:268
+msgid "Quick start"
+msgstr ""
+
+#: admin-settings.php:269
+msgid "Stop bad emails before they hit your forms."
+msgstr ""
+
+#: admin-settings.php:270
+msgid "EasySender checks every submitted email address in real time — blocking typos, disposable inboxes, and undeliverable addresses across all your form plugins."
+msgstr ""
+
+#: admin-settings.php:273
+#: admin-settings.php:361
+msgid "Run a test email"
+msgstr ""
+
+#: admin-settings.php:274
+#: admin-settings.php:373
+msgid "View usage"
+msgstr ""
+
+#: admin-settings.php:276
+msgid "Continue setup"
+msgstr ""
+
+#: admin-settings.php:293
+msgid "Setup checklist"
+msgstr ""
+
+#: admin-settings.php:299
+msgid "Done"
+msgstr ""
+
+#: admin-settings.php:301
+msgid "1. Install plugin"
+msgstr ""
+
+#: admin-settings.php:302
+msgid "EasySender is active and ready to configure."
+msgstr ""
+
+#: admin-settings.php:314
+msgid "2. API Settings"
+msgstr ""
+
+#: admin-settings.php:315
+msgid "Configure your API credentials and verification rules."
+msgstr ""
+
+#: admin-settings.php:327
+msgid "3. Form Integrations"
+msgstr ""
+
+#: admin-settings.php:328
+msgid "Enable verification on Contact Form 7, WPForms, and others."
+msgstr ""
+
+#: admin-settings.php:335
+msgid "How to get your API credentials"
+msgstr ""
+
+#: admin-settings.php:336
+msgid "Follow these steps to connect EasySender to your site."
+msgstr ""
+
+#: admin-settings.php:340
+msgid "Sign up"
+msgstr ""
+
+#: admin-settings.php:340
+msgid "for an EasyDMARC account."
+msgstr ""
+
+#: admin-settings.php:341
+msgid "Sign in"
+msgstr ""
+
+#: admin-settings.php:341
+msgid "to your account and switch to EasySender (upper-left corner). From the left-hand Settings menu, select API, then click Create API Key."
+msgstr ""
+
+#: admin-settings.php:342
+msgid "Copy your API Client ID and Client Secret (API Key)."
+msgstr ""
+
+#. translators: %s: link to settings page
+#: admin-settings.php:346
+#, php-format
+msgid "Go to %s and paste your credentials."
+msgstr ""
+
+#: admin-settings.php:347
+#: admin-settings.php:699
+msgid "API Settings"
+msgstr ""
+
+#: admin-settings.php:350
+msgid "Enable your form integrations and start verifying emails!"
+msgstr ""
+
+#: admin-settings.php:356
+msgid "Quick actions"
+msgstr ""
+
+#: admin-settings.php:362
+msgid "Verify a single address or upload a CSV."
+msgstr ""
+
+#: admin-settings.php:367
+msgid "Connect API key"
+msgstr ""
+
+#: admin-settings.php:368
+msgid "Enter your EasySender credentials to get started."
+msgstr ""
+
+#: admin-settings.php:374
+msgid "Track verification credits and trends."
+msgstr ""
+
+#: admin-settings.php:378
+msgid "Read the docs"
+msgstr ""
+
+#: admin-settings.php:379
+msgid "API reference, integration guides, FAQ."
+msgstr ""
+
+#: admin-settings.php:542
+#: admin-settings.php:988
+#: contact-form-handler.php:80
+#: contact-form-handler.php:102
+#: includes/email-check.php:35
+#: includes/email-check.php:190
+msgid "Invalid email address."
+msgstr ""
+
+#: admin-settings.php:543
+#: admin-settings.php:995
+#: elementor-handler.php:69
+#: fluentforms-handler.php:69
+#: gravityforms-handler.php:75
+#: includes/email-check.php:191
+#: ninjaforms-handler.php:79
+#: sureforms-handler.php:83
+#: woocommerce-handler.php:62
+#: wp-registration-handler.php:50
+#: wpforms-handler.php:44
+msgid "Risky email address."
+msgstr ""
+
+#: admin-settings.php:544
+#: admin-settings.php:1002
+#: elementor-handler.php:70
+#: fluentforms-handler.php:72
+#: gravityforms-handler.php:78
+#: includes/email-check.php:55
+#: includes/email-check.php:100
+#: ninjaforms-handler.php:82
+#: sureforms-handler.php:86
+#: woocommerce-handler.php:65
+#: wp-registration-handler.php:53
+#: wpforms-handler.php:47
+msgid "Verification error. Please try again."
+msgstr ""
+
+#. translators: %s: default message text
+#: admin-settings.php:557
+#, php-format
+msgid "Default: %s"
+msgstr ""
+
+#: admin-settings.php:566
+msgid "Verify API Key"
+msgstr ""
+
+#: admin-settings.php:567
+msgid "Generate Key"
+msgstr ""
+
+#: admin-settings.php:591
+#: admin-settings.php:890
+msgid "Not available yet"
+msgstr ""
+
+#: admin-settings.php:593
+#: admin-settings.php:892
+#: admin-settings.php:1104
+msgid "Not installed"
+msgstr ""
+
+#: admin-settings.php:595
+#: admin-settings.php:894
+msgid "Not active"
+msgstr ""
+
+#: admin-settings.php:700
+msgid "Logging &amp; Usage"
+msgstr ""
+
+#: admin-settings.php:701
+msgid "Test Email"
+msgstr ""
+
+#: admin-settings.php:702
+msgid "Error Messages"
+msgstr ""
+
+#: admin-settings.php:703
+#: admin-settings.php:764
+msgid "Documentation"
+msgstr ""
+
+#: admin-settings.php:704
+msgid "Buy Credits"
+msgstr ""
+
+#: admin-settings.php:708
+#: admin-settings.php:716
+msgid "EasySender Settings"
+msgstr ""
+
+#: admin-settings.php:717
+msgid "Configure how email verification runs on your forms."
+msgstr ""
+
+#: admin-settings.php:722
+msgid "Settings tabs"
+msgstr ""
+
+#: admin-settings.php:791
+msgid "Deliverable"
+msgstr ""
+
+#: admin-settings.php:792
+msgid "Mailbox confirmed — safe to send."
+msgstr ""
+
+#: admin-settings.php:797
+msgid "Risky"
+msgstr ""
+
+#: admin-settings.php:798
+msgid "Catch-all, role-based, or low-confidence — accept at your discretion."
+msgstr ""
+
+#: admin-settings.php:803
+msgid "Undeliverable"
+msgstr ""
+
+#: admin-settings.php:804
+msgid "Address bounces — strongly recommend rejecting."
+msgstr ""
+
+#: admin-settings.php:809
+msgid "Unknown"
+msgstr ""
+
+#: admin-settings.php:810
+msgid "Provider couldn't be reached — accept to avoid blocking valid users."
+msgstr ""
+
+#: admin-settings.php:822
+msgid "API credentials"
+msgstr ""
+
+#: admin-settings.php:823
+msgid "Connect this site to your EasySender account. Generate or rotate keys from your dashboard."
+msgstr ""
+
+#: admin-settings.php:828
+msgid "Client ID"
+msgstr ""
+
+#: admin-settings.php:832
+msgid "Client secret (API key)"
+msgstr ""
+
+#: admin-settings.php:835
+msgid "Show"
+msgstr ""
+
+#: admin-settings.php:837
+msgid "Kept encrypted in wp_options. Never exposed to the front-end."
+msgstr ""
+
+#: admin-settings.php:841
+msgid "Verify API key"
+msgstr ""
+
+#: admin-settings.php:842
+msgid "Generate new key"
+msgstr ""
+
+#: admin-settings.php:851
+msgid "Form integrations"
+msgstr ""
+
+#: admin-settings.php:852
+msgid "Choose which form plugins should run email verification before submission."
+msgstr ""
+
+#: admin-settings.php:925
+msgid "Allowed verification results"
+msgstr ""
+
+#: admin-settings.php:926
+msgid "Email statuses you accept. Anything else is rejected with your custom error message."
+msgstr ""
+
+#: admin-settings.php:961
+msgid "Allow submission if verification is unavailable"
+msgstr ""
+
+#: admin-settings.php:962
+msgid "If our API times out or returns an error, accept the submission anyway. Recommended to keep forms working during outages."
+msgstr ""
+
+#: admin-settings.php:973
+#: admin-settings.php:1044
+msgid "Save changes"
+msgstr ""
+
+#: admin-settings.php:986
+msgid "Invalid email message"
+msgstr ""
+
+#: admin-settings.php:987
+msgid "Shown when format is malformed or the address bounces."
+msgstr ""
+
+#: admin-settings.php:993
+msgid "Risky email message"
+msgstr ""
+
+#: admin-settings.php:994
+msgid "Shown when the address is catch-all, role-based, or low-confidence."
+msgstr ""
+
+#: admin-settings.php:1000
+msgid "API error message"
+msgstr ""
+
+#: admin-settings.php:1001
+msgid "Shown if our service is unreachable. Only seen when \"allow on error\" is off."
+msgstr ""
+
+#: admin-settings.php:1013
+msgid "Custom error messages"
+msgstr ""
+
+#: admin-settings.php:1014
+msgid "Shown to visitors when their email fails verification. Keep them short and actionable."
+msgstr ""
+
+#: admin-settings.php:1065
+msgid "API documentation"
+msgstr ""
+
+#: admin-settings.php:1066
+msgid "Endpoints, parameters, response codes, and rate limits for the EasySender verification API."
+msgstr ""
+
+#: admin-settings.php:1070
+msgid "Legal &amp; privacy"
+msgstr ""
+
+#: admin-settings.php:1071
+msgid "GDPR, data processing addendum, terms of service, and how we handle email data."
+msgstr ""
+
+#: admin-settings.php:1075
+msgid "Support &amp; FAQ"
+msgstr ""
+
+#: admin-settings.php:1076
+msgid "Troubleshooting common issues, integration guides, and contact form for our team."
+msgstr ""
+
+#: admin-settings.php:1080
+msgid "Quick start guide"
+msgstr ""
+
+#: admin-settings.php:1081
+msgid "Configure your API credentials and enable form integrations."
+msgstr ""
+
+#: admin-settings.php:1089
+msgid "Supported form plugins"
+msgstr ""
+
+#: admin-settings.php:1090
+msgid "Auto-detected on this site. Enable them in the API Settings tab."
+msgstr ""
+
+#: admin-settings.php:1098
+msgid "Not available"
+msgstr ""
+
+#: admin-settings.php:1101
+msgid "Compatible"
+msgstr ""
+
+#: admin-settings.php:1122
+msgid "Quick reference"
+msgstr ""
+
+#: admin-settings.php:1123
+msgid "Common questions answered without leaving this page."
+msgstr ""
+
+#: admin-settings.php:1127
+msgid "How accurate is verification?"
+msgstr ""
+
+#: admin-settings.php:1128
+msgid "Most addresses come back deliverable or undeliverable with high confidence. Catch-all domains and some corporate mailservers return \"risky\" — accept those at your discretion."
+msgstr ""
+
+#: admin-settings.php:1131
+msgid "Does verification slow down my forms?"
+msgstr ""
+
+#: admin-settings.php:1132
+msgid "Average API latency is under 500 ms. Verification runs server-side during form submission, so users typically don't notice."
+msgstr ""
+
+#: admin-settings.php:1135
+msgid "What happens if my credits run out mid-month?"
+msgstr ""
+
+#: admin-settings.php:1136
+msgid "Submissions either pass through or are blocked depending on your \"Allow on API error\" setting. We recommend enabling that fallback to keep forms working."
+msgstr ""
+
+#: admin-settings.php:1139
+msgid "Can I use EasySender with a custom form plugin?"
+msgstr ""
+
+#. translators: %s: function name
+#: admin-settings.php:1143
+#, php-format
+msgid "Yes — call %s from your form's validation hook. It returns a structured result with status, reason, and details."
+msgstr ""
+
+#: admin-settings.php:1159
+msgid "Test a Single Email Address"
+msgstr ""
+
+#: admin-settings.php:1162
+msgid "Instantly verify any email address against our real-time API. Results show deliverability, format validity, domain health, and spam risk."
+msgstr ""
+
+#: admin-settings.php:1165
+msgid "Email address to verify"
+msgstr ""
+
+#: admin-settings.php:1166
+msgid "Verify Email"
+msgstr ""
+
+#: admin-settings.php:1170
+msgid "Result will appear here..."
+msgstr ""
+
+#: admin-settings.php:1177
+msgid "or verify a list in bulk"
+msgstr ""
+
+#: admin-settings.php:1184
+msgid "Bulk Verify from CSV"
+msgstr ""
+
+#: admin-settings.php:1187
+msgid "Upload a CSV file containing email addresses. We'll verify the entire list and let you choose exactly which results to export. Uses 1 credit per email."
+msgstr ""
+
+#: admin-settings.php:1192
+msgid "CSV with header row"
+msgstr ""
+
+#: admin-settings.php:1193
+msgid "File has a header. Choose which column contains email addresses during upload."
+msgstr ""
+
+#: admin-settings.php:1196
+msgid "Plain email list (CSV)"
+msgstr ""
+
+#: admin-settings.php:1197
+msgid "One email address per row, no header row required."
+msgstr ""
+
+#: admin-settings.php:1202
+msgid "Upload CSV file"
+msgstr ""
+
+#: admin-settings.php:1204
+msgid "Drop your CSV file here"
+msgstr ""
+
+#. translators: %s: clickable browse link
+#: admin-settings.php:1209
+#, php-format
+msgid "Drag & drop your file, or %s."
+msgstr ""
+
+#: admin-settings.php:1210
+msgid "browse to select a CSV"
+msgstr ""
+
+#: admin-settings.php:1214
+msgid "Maximum 500,000 email addresses per upload."
+msgstr ""
+
+#: admin-settings.php:1232
+msgid "Accepted File Format — CSV Only"
+msgstr ""
+
+#: admin-settings.php:1235
+msgid "Single column (no header needed)"
+msgstr ""
+
+#: admin-settings.php:1241
+msgid "Multi-column CSV (with header row)"
+msgstr ""
+
+#: admin-settings.php:1264
+#: elementor-handler.php:68
+#: fluentforms-handler.php:66
+#: gravityforms-handler.php:72
+#: ninjaforms-handler.php:76
+#: sureforms-handler.php:80
+#: woocommerce-handler.php:59
+#: wp-registration-handler.php:47
+#: wpforms-handler.php:41
+msgid "Please enter a valid email address."
+msgstr ""
+
+#: admin-settings.php:1286
+#: includes/email-check.php:47
+msgid "Auth helper missing."
+msgstr ""
+
+#: admin-settings.php:1298
+#: includes/email-check.php:64
+msgid "Verification URL is not configured."
+msgstr ""
+
+#: admin-settings.php:1336
+#: includes/email-check.php:111
+msgid "Verification service unavailable: credit limit reached. Please try again later."
+msgstr ""
+
+#: admin-settings.php:1339
+#: includes/email-check.php:118
+msgid "Verification timed out. Please try again."
+msgstr ""
+
+#: admin-settings.php:1384
+msgid "Allocated this period"
+msgstr ""
+
+#: admin-settings.php:1385
+#: admin-settings.php:1411
+msgid "Used"
+msgstr ""
+
+#: admin-settings.php:1386
+msgid "Remaining"
+msgstr ""
+
+#: admin-settings.php:1392
+msgid "Verification activity"
+msgstr ""
+
+#: admin-settings.php:1393
+msgid "Live credit usage from EasySender"
+msgstr ""
+
+#: admin-settings.php:1405
+msgid "credits left"
+msgstr ""
+
+#: admin-settings.php:1410
+msgid "Available"
+msgstr ""
+
+#: admin-settings.php:1410
+msgid "Use for email verification across all enabled forms."
+msgstr ""
+
+#: admin-settings.php:1411
+msgid "Verifications sent in the current billing cycle."
+msgstr ""
+
+#: admin-settings.php:1412
+msgid "Allocated"
+msgstr ""
+
+#: admin-settings.php:1412
+msgid "Total credits in current cycle."
+msgstr ""
+
+#: admin-settings.php:1429
+msgid "Need more capacity?"
+msgstr ""
+
+#: admin-settings.php:1431
+msgid "Larger plans drop to $0.0004 per verification."
+msgstr ""
+
+#: admin-settings.php:1434
+msgid "Upgrade anytime — credits and pricing update on next billing cycle."
+msgstr ""
+
+#: admin-settings.php:1438
+msgid "Upgrade plan"
+msgstr ""
+
+#: admin-settings.php:1567
+msgid "EasySender:"
+msgstr ""
+
+#: admin-settings.php:1599
+msgid "Unauthorized."
+msgstr ""
+
+#: admin-settings.php:1620
+msgid "Please enter Client ID and Client Secret."
+msgstr ""
+
+#: admin-settings.php:1662
+msgid "Credentials verified and saved."
+msgstr ""
+
+#: admin-settings.php:1680
+msgid "API returned an error."
+msgstr ""
+
+#: admin-settings.php:1696
+msgid "CURRENT BALANCE"
+msgstr ""
+
+#: admin-settings.php:1699
+msgid "credits remaining this month"
+msgstr ""
+
+#: admin-settings.php:1709
+msgid "Choose Your Monthly Verification Plan"
+msgstr ""
+
+#: admin-settings.php:1710
+msgid "Each plan gives you a monthly credit allowance — credits refresh automatically on your billing date. Upgrade, downgrade, or cancel anytime from your EasyDMARC account."
+msgstr ""
+
+#: admin-settings.php:1715
+msgid "Credits refresh monthly"
+msgstr ""
+
+#: admin-settings.php:1716
+msgid "Cancel anytime"
+msgstr ""
+
+#: admin-settings.php:1717
+msgid "Upgrade or downgrade anytime"
+msgstr ""
+
+#: admin-settings.php:1718
+msgid "Billed securely on EasyDMARC.com"
+msgstr ""
+
+#: admin-settings.php:1725
+msgid "These are monthly subscription plans, not one-time credits."
+msgstr ""
+
+#: admin-settings.php:1726
+msgid "Your selected number of verifications is included every month, automatically. Subscription and billing are managed securely on"
+msgstr ""
+
+#. translators: %s: "Subscribe" button label reference
+#: admin-settings.php:1731
+#, php-format
+msgid "clicking \"%s\" below will open your EasyDMARC account to complete checkout."
+msgstr ""
+
+#: admin-settings.php:1732
+#: admin-settings.php:1797
+#: admin-settings.php:1806
+msgid "Subscribe"
+msgstr ""
+
+#: admin-settings.php:1752
+msgid "Need over 1,000,000 verifications / month?"
+msgstr ""
+
+#: admin-settings.php:1753
+msgid "Custom volume pricing — typically 40–60% off. Talk to the team."
+msgstr ""
+
+#: admin-settings.php:1756
+msgid "Contact Sales"
+msgstr ""
+
+#: admin-settings.php:1763
+msgid "Do unused credits roll over?"
+msgstr ""
+
+#: admin-settings.php:1764
+msgid "No — credits refresh each billing cycle. Unused credits from the previous month don't carry forward."
+msgstr ""
+
+#: admin-settings.php:1767
+msgid "Can I change plans?"
+msgstr ""
+
+#: admin-settings.php:1768
+msgid "Yes, upgrade or downgrade anytime from your EasyDMARC account. Changes take effect at the next billing cycle."
+msgstr ""
+
+#: admin-settings.php:1771
+msgid "Where do I manage billing?"
+msgstr ""
+
+#: admin-settings.php:1772
+msgid "All billing, invoices, and subscription settings live in your EasyDMARC account at easydmarc.com."
+msgstr ""
+
+#: admin-settings.php:1780
+msgid "Selected Plan"
+msgstr ""
+
+#. translators: %1$s: "Subscribe", %2$s: "EasyDMARC.com" (bold)
+#: admin-settings.php:1796
+#, php-format
+msgid "Clicking \"%1$s\" opens %2$s where you'll complete your subscription securely. Your plan will activate and sync back to this plugin instantly."
+msgstr ""
+
+#: admin-settings.php:1805
+msgid "Subscribe — opens EasyDMARC.com"
+msgstr ""
+
+#. translators: %1$s: easydmarc.com link, %2$s: Terms of Service link
+#: admin-settings.php:1816
+#, php-format
+msgid "You'll be taken to %1$s to complete checkout. By subscribing you agree to EasyDMARC's %2$s."
+msgstr ""
+
+#: admin-settings.php:1818
+msgid "Terms of Service"
+msgstr ""
+
+#. translators: %s: Verification status returned by the API (e.g. deliverable, risky, undeliverable, unknown).
+#. translators: %s: Verification status returned by the API.
+#: contact-form-handler.php:95
+#: fluentforms-handler.php:106
+#: gravityforms-handler.php:114
+#: ninjaforms-handler.php:140
+#: sureforms-handler.php:124
+#: woocommerce-handler.php:99
+#: wp-registration-handler.php:86
+#: wpforms-handler.php:98
+#, php-format
+msgid "This email is marked as %s and is not allowed by the current rules."
+msgstr ""
+
+#: includes/email-check.php:144
+msgid "Verification request failed."
+msgstr ""
