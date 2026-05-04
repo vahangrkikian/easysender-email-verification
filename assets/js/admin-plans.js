@@ -1,4 +1,4 @@
-/* EasySender — Buy Credits tab */
+/* EasyDMARC — Buy Credits tab */
 (function () {
     'use strict';
 

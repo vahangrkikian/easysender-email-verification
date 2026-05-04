@@ -1,12 +1,12 @@
 <?php
 /*
-Plugin Name: EasySender Email Verification
+Plugin Name: EasyDMARC Email Verification
 Plugin URI: https://easydmarc.com/easysender
 Description: Verifies emails using the EasyDMARC API across forms (Elementor, Contact Form 7, Gravity Forms, WooCommerce, WP registration).
 Version: 1.1.0
 Author: Vahan Grkikian
 Author URI: https://easydmarc.com/
-Text Domain: easysender-email-verification
+Text Domain: easydmarc-email-verification
 Domain Path: /languages
 Requires at least: 5.8
 Requires PHP: 7.4
@@ -82,11 +82,11 @@ function easysender_decrypt($data) {
 register_activation_hook(EASYSENDER_PLUGIN_FILE, function () {
     // PHP version
     if (version_compare(PHP_VERSION, '7.4', '<')) {
-        wp_die('EasySender requires PHP 7.4+. Current: ' . PHP_VERSION);
+        wp_die('EasyDMARC requires PHP 7.4+. Current: ' . PHP_VERSION);
     }
     // OpenSSL check (for encrypt/decrypt)
     if (!function_exists('openssl_encrypt')) {
-        wp_die('EasySender requires the OpenSSL PHP extension.');
+        wp_die('EasyDMARC requires the OpenSSL PHP extension.');
     }
     // Files exist?
     $required = [
@@ -96,7 +96,7 @@ register_activation_hook(EASYSENDER_PLUGIN_FILE, function () {
     ];
     foreach ($required as $file) {
         if (!is_readable($file)) {
-            wp_die('EasySender missing file: ' . esc_html(basename($file)));
+            wp_die('EasyDMARC missing file: ' . esc_html(basename($file)));
         }
     }
 });

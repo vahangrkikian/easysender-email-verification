@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) exit;
 
 if (!function_exists('easysender_log_api_error')) {
     /**
-     * Centralized API error logger for EasySender.
+     * Centralized API error logger for EasyDMARC.
      * Redacts email-like data before writing to WordPress debug log.
      *
      * Logs are written to wp-content/debug.log when WP_DEBUG_LOG is enabled.
@@ -57,16 +57,16 @@ if (!function_exists('easysender_log_api_error')) {
         $log_message = '';
 
         if (is_wp_error($response_or_error)) {
-            $log_message = "[EasySender] API {$endpoint} WP_Error: {$response_or_error->get_error_code()} {$response_or_error->get_error_message()}{$extra_str}";
+            $log_message = "[EasyDMARC] API {$endpoint} WP_Error: {$response_or_error->get_error_code()} {$response_or_error->get_error_message()}{$extra_str}";
         } elseif (is_numeric($response_or_error)) {
-            $log_message = "[EasySender] API {$endpoint} HTTP {$response_or_error}{$extra_str}";
+            $log_message = "[EasyDMARC] API {$endpoint} HTTP {$response_or_error}{$extra_str}";
         } else {
             // Handle HTTP response array - could contain WP_Error or valid response
             $code = function_exists('wp_remote_retrieve_response_code') ? wp_remote_retrieve_response_code($response_or_error) : 0;
 
             // Check if the response is actually a WP_Error (happens with transport errors)
             if (is_wp_error($response_or_error)) {
-                $log_message = "[EasySender] API {$endpoint} WP_Error: {$response_or_error->get_error_code()} {$response_or_error->get_error_message()}{$extra_str}";
+                $log_message = "[EasyDMARC] API {$endpoint} WP_Error: {$response_or_error->get_error_code()} {$response_or_error->get_error_message()}{$extra_str}";
             } else {
                 $body = function_exists('wp_remote_retrieve_body') ? wp_remote_retrieve_body($response_or_error) : '';
 
@@ -105,7 +105,7 @@ if (!function_exists('easysender_log_api_error')) {
                 }
 
                 $tail = $msg ? " msg: {$msg}" : '';
-                $log_message = "[EasySender] API {$endpoint} HTTP {$code}{$tail}{$extra_str}";
+                $log_message = "[EasyDMARC] API {$endpoint} HTTP {$code}{$tail}{$extra_str}";
             }
         }
 

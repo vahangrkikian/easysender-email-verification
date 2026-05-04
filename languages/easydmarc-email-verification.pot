@@ -2,8 +2,8 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: EasySender Email Verification 1.1.0\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/easysender-email-verification\n"
+"Project-Id-Version: EasyDMARC Email Verification 1.1.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/easydmarc-email-verification\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -12,41 +12,41 @@ msgstr ""
 "POT-Creation-Date: 2026-05-02T23:17:36+03:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
-"X-Domain: easysender-email-verification\n"
+"X-Domain: easydmarc-email-verification\n"
 
 #. Plugin Name of the plugin
-#: easysender-email-verification.php
+#: easydmarc-email-verification.php
 #: admin-settings.php:383
-msgid "EasySender Email Verification"
+msgid "EasyDMARC Email Verification"
 msgstr ""
 
 #. Plugin URI of the plugin
-#: easysender-email-verification.php
+#: easydmarc-email-verification.php
 msgid "https://easydmarc.com/easysender"
 msgstr ""
 
 #. Description of the plugin
-#: easysender-email-verification.php
+#: easydmarc-email-verification.php
 msgid "Verifies emails using the EasyDMARC API across forms (Elementor, Contact Form 7, Gravity Forms, WooCommerce, WP registration)."
 msgstr ""
 
 #. Author of the plugin
-#: easysender-email-verification.php
+#: easydmarc-email-verification.php
 msgid "Vahan Grkikian"
 msgstr ""
 
 #. Author URI of the plugin
-#: easysender-email-verification.php
+#: easydmarc-email-verification.php
 msgid "https://easydmarc.com/"
 msgstr ""
 
 #: admin-settings.php:247
 #: admin-settings.php:764
-msgid "EasySender"
+msgid "EasyDMARC"
 msgstr ""
 
 #: admin-settings.php:255
-msgid "Welcome to EasySender"
+msgid "Welcome to EasyDMARC"
 msgstr ""
 
 #: admin-settings.php:256
@@ -66,7 +66,7 @@ msgid "Stop bad emails before they hit your forms."
 msgstr ""
 
 #: admin-settings.php:270
-msgid "EasySender checks every submitted email address in real time — blocking typos, disposable inboxes, and undeliverable addresses across all your form plugins."
+msgid "EasyDMARC checks every submitted email address in real time — blocking typos, disposable inboxes, and undeliverable addresses across all your form plugins."
 msgstr ""
 
 #: admin-settings.php:273
@@ -96,7 +96,7 @@ msgid "1. Install plugin"
 msgstr ""
 
 #: admin-settings.php:302
-msgid "EasySender is active and ready to configure."
+msgid "EasyDMARC is active and ready to configure."
 msgstr ""
 
 #: admin-settings.php:314
@@ -120,7 +120,7 @@ msgid "How to get your API credentials"
 msgstr ""
 
 #: admin-settings.php:336
-msgid "Follow these steps to connect EasySender to your site."
+msgid "Follow these steps to connect EasyDMARC to your site."
 msgstr ""
 
 #: admin-settings.php:340
@@ -171,7 +171,7 @@ msgid "Connect API key"
 msgstr ""
 
 #: admin-settings.php:368
-msgid "Enter your EasySender credentials to get started."
+msgid "Enter your EasyDMARC credentials to get started."
 msgstr ""
 
 #: admin-settings.php:374
@@ -277,7 +277,7 @@ msgstr ""
 
 #: admin-settings.php:708
 #: admin-settings.php:716
-msgid "EasySender Settings"
+msgid "EasyDMARC Settings"
 msgstr ""
 
 #: admin-settings.php:717
@@ -325,7 +325,7 @@ msgid "API credentials"
 msgstr ""
 
 #: admin-settings.php:823
-msgid "Connect this site to your EasySender account. Generate or rotate keys from your dashboard."
+msgid "Connect this site to your EasyDMARC account. Generate or rotate keys from your dashboard."
 msgstr ""
 
 #: admin-settings.php:828
@@ -418,7 +418,7 @@ msgid "API documentation"
 msgstr ""
 
 #: admin-settings.php:1066
-msgid "Endpoints, parameters, response codes, and rate limits for the EasySender verification API."
+msgid "Endpoints, parameters, response codes, and rate limits for the EasyDMARC verification API."
 msgstr ""
 
 #: admin-settings.php:1070
@@ -494,7 +494,7 @@ msgid "Submissions either pass through or are blocked depending on your \"Allow 
 msgstr ""
 
 #: admin-settings.php:1139
-msgid "Can I use EasySender with a custom form plugin?"
+msgid "Can I use EasyDMARC with a custom form plugin?"
 msgstr ""
 
 #. translators: %s: function name
@@ -635,7 +635,7 @@ msgid "Verification activity"
 msgstr ""
 
 #: admin-settings.php:1393
-msgid "Live credit usage from EasySender"
+msgid "Live credit usage from EasyDMARC"
 msgstr ""
 
 #: admin-settings.php:1405
@@ -679,7 +679,7 @@ msgid "Upgrade plan"
 msgstr ""
 
 #: admin-settings.php:1567
-msgid "EasySender:"
+msgid "EasyDMARC:"
 msgstr ""
 
 #: admin-settings.php:1599

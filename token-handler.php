@@ -1,6 +1,6 @@
 <?php
 /**
- * Token helper for EasySender
+ * Token helper for EasyDMARC
  * - Single source of truth for fetching/caching token
  * - Safe to include multiple times thanks to function_exists guard
  */

@@ -1,4 +1,4 @@
-/* EasySender — Bulk CSV Upload (Test Email tab) */
+/* EasyDMARC — Bulk CSV Upload (Test Email tab) */
 (function () {
     'use strict';
 

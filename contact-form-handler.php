@@ -1,6 +1,6 @@
 <?php
 /**
- * Contact Form 7 handler for EasySender Email Verification
+ * Contact Form 7 handler for EasyDMARC Email Verification
  *
  * Moves all CF7-related validation into this file.
  * Uses easysender_do_email_check() to decide whether to accept an email.
@@ -57,7 +57,7 @@ if ( ! function_exists( 'easysender_cf7_get_posted_email' ) ) {
 
 if ( ! function_exists( 'easysender_cf7_validate_email_tag' ) ) {
     /**
-     * Validate a CF7 email field using EasySender rules.
+     * Validate a CF7 email field using EasyDMARC rules.
      *
      * @param WPCF7_Validation $result Validation result.
      * @param object           $tag    CF7 form tag object.
@@ -77,7 +77,7 @@ if ( ! function_exists( 'easysender_cf7_validate_email_tag' ) ) {
             if ( ! is_email( $email ) ) {
                 $msg = function_exists( 'wpcf7_get_validation_error_message' )
                     ? wpcf7_get_validation_error_message( 'invalid_email' )
-                    : __( 'Invalid email address.', 'easysender-email-verification' );
+                    : __( 'Invalid email address.', 'easydmarc-email-verification' );
 
                 $result->invalidate( $tag, $msg );
             }
@@ -92,14 +92,14 @@ if ( ! function_exists( 'easysender_cf7_validate_email_tag' ) ) {
 
             if ( $reason === '' && $status !== '' ) {
                 /* translators: %s: Verification status returned by the API (e.g. deliverable, risky, undeliverable, unknown). */
-                $template = __( 'This email is marked as %s and is not allowed by the current rules.', 'easysender-email-verification' );
+                $template = __( 'This email is marked as %s and is not allowed by the current rules.', 'easydmarc-email-verification' );
                 $reason   = sprintf( $template, $status );
             }
 
             if ( $reason === '' ) {
                 $reason = function_exists( 'wpcf7_get_validation_error_message' )
                     ? wpcf7_get_validation_error_message( 'invalid_email' )
-                    : __( 'Invalid email address.', 'easysender-email-verification' );
+                    : __( 'Invalid email address.', 'easydmarc-email-verification' );
             }
 
             $result->invalidate( $tag, $reason );

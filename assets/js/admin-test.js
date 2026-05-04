@@ -1,4 +1,4 @@
-/* EasySender — Test Email tab */
+/* EasyDMARC — Test Email tab */
 (function () {
     var btn   = document.getElementById('easysender-test-run');
     var input = document.getElementById('easysender-test-email');

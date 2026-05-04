@@ -65,9 +65,9 @@ function easysender_elementor_validate_email($record, $ajax_handler) {
 
     // Customizable error messages from settings
     $error_opts  = get_option('easysender_error_messages', []);
-    $msg_invalid = !empty($error_opts['msg_invalid'])   ? $error_opts['msg_invalid']   : __('Please enter a valid email address.', 'easysender-email-verification');
-    $msg_risky   = !empty($error_opts['msg_risky'])     ? $error_opts['msg_risky']     : __('Risky email address.', 'easysender-email-verification');
-    $msg_api     = !empty($error_opts['msg_api_error']) ? $error_opts['msg_api_error'] : __('Verification error. Please try again.', 'easysender-email-verification');
+    $msg_invalid = !empty($error_opts['msg_invalid'])   ? $error_opts['msg_invalid']   : __('Please enter a valid email address.', 'easydmarc-email-verification');
+    $msg_risky   = !empty($error_opts['msg_risky'])     ? $error_opts['msg_risky']     : __('Risky email address.', 'easydmarc-email-verification');
+    $msg_api     = !empty($error_opts['msg_api_error']) ? $error_opts['msg_api_error'] : __('Verification error. Please try again.', 'easydmarc-email-verification');
 
     // Find the email field/value robustly
     $email_value    = '';

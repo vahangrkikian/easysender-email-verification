@@ -18,7 +18,7 @@ dist/
 build/
 
 # WordPress.org submission folder
-easysender-email-verification/
+easydmarc-email-verification/
 
 # IDE & editor files
 .idea/

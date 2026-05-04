@@ -137,7 +137,7 @@ function easysender_get_plans_catalog() {
 }
 
 /**
- * Get the organisation ID (ownerId) from the EasySender auth/me endpoint.
+ * Get the organisation ID (ownerId) from the EasyDMARC auth/me endpoint.
  *
  * Calls GET /api/v0.0/auth/me with the current bearer token and caches
  * the ownerId in a transient scoped to the client_id hash.

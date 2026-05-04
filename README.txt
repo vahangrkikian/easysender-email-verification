@@ -1,4 +1,4 @@
-=== EasySender Email Verification ===
+=== EasyDMARC Email Verification ===
 Contributors: easydmarc
 Tags: email verification, spam prevention, contact form 7, elementor, wpforms
 Requires at least: 5.8
@@ -8,11 +8,11 @@ Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Validate email addresses in real time inside WordPress forms using EasyDMARC's EasySender API.
+Validate email addresses in real time inside WordPress forms using the EasyDMARC email verification API.
 
 == Description ==
 
-**EasySender Email Verification** connects your WordPress forms to EasyDMARC's EasySender API and validates every submitted email address before the form is accepted. It helps you block invalid, disposable, risky, and undeliverable addresses from entering your system.
+**EasyDMARC Email Verification** connects your WordPress forms to the EasyDMARC email verification API and validates every submitted email address before the form is accepted. It helps you block invalid, disposable, risky, and undeliverable addresses from entering your system.
 
 All verification requests are performed server-side — no JavaScript is sent to the browser. Credentials are encrypted with AES-256 using your site's `AUTH_KEY`.
 
@@ -29,7 +29,7 @@ All verification requests are performed server-side — no JavaScript is sent to
 = How it works =
 
 1. A visitor submits a form containing an email field.
-2. The plugin sends the address to the EasySender API for real-time verification.
+2. The plugin sends the address to the EasyDMARC API for real-time verification.
 3. If the result is not in your allowed list (e.g. you block "undeliverable"), the form is rejected and a clear error message is shown under the email field.
 4. Deliverable addresses pass through normally.
 
@@ -40,7 +40,7 @@ All verification requests are performed server-side — no JavaScript is sent to
 * **Custom error messages** — set your own text for invalid, risky, and API-error scenarios.
 * **Test Email tab** — verify any address from the admin panel and inspect the raw API result.
 * **Bulk CSV verification** — upload a CSV file with up to 500,000 email addresses, verify them in bulk, view a visual breakdown (donut chart), and export filtered results as CSV.
-* **Buy Credits tab** — browse available EasySender plans, see your current balance, and subscribe directly from the WordPress admin.
+* **Buy Credits tab** — browse available EasyDMARC plans, see your current balance, and subscribe directly from the WordPress admin.
 * **Credit usage dashboard** — see your allocated credits, current balance, and usage at a glance.
 * **Debug logging** — errors are written to `debug.log` (with email addresses redacted) when `WP_DEBUG_LOG` is enabled.
 
@@ -53,14 +53,14 @@ Email addresses are sent to `https://sender-api.easydmarc.com` for verification.
 * WordPress 5.8 or later
 * PHP 7.4 or later
 * OpenSSL PHP extension
-* An EasyDMARC account with an EasySender API Client ID and Client Secret
+* An EasyDMARC account with an API Client ID and Client Secret
 * One or more supported form plugins (Elementor Pro, Contact Form 7, WPForms, Ninja Forms, Fluent Forms, Gravity Forms, or SureForms)
 
 == Installation ==
 
-1. Upload the `easysender-email-verification` folder to `/wp-content/plugins/` and activate it, **or** search for "EasySender Email Verification" in **Plugins → Add New** and click Install.
-2. Go to **EasySender → Settings** and open the **API Settings** tab.
-3. Enter your EasySender **Client ID** and **Client Secret**.
+1. Upload the `easydmarc-email-verification` folder to `/wp-content/plugins/` and activate it, **or** search for "EasyDMARC Email Verification" in **Plugins → Add New** and click Install.
+2. Go to **EasyDMARC → Settings** and open the **API Settings** tab.
+3. Enter your EasyDMARC **Client ID** and **Client Secret**.
 4. Click **Verify API Key** to confirm your credentials are working.
 5. Enable the form integrations you use and configure which verification statuses are allowed.
 

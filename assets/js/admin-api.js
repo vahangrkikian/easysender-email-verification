@@ -1,4 +1,4 @@
-/* EasySender — Verify API Key button (API Settings tab) */
+/* EasyDMARC — Verify API Key button (API Settings tab) */
 (function () {
     var btn    = document.getElementById('easysender-verify-api-key');
     var status = document.getElementById('easysender-verify-status');

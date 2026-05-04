@@ -1,6 +1,6 @@
 <?php
 /**
- * Fluent Forms handler for EasySender Email Verification
+ * Fluent Forms handler for EasyDMARC Email Verification
  *
  * Validates email fields in Fluent Forms submissions using easysender_do_email_check().
  *
@@ -63,13 +63,13 @@ if ( ! function_exists( 'easysender_fluentforms_validate_email_field' ) ) {
         $error_opts  = get_option( 'easysender_error_messages', [] );
         $msg_invalid = ! empty( $error_opts['msg_invalid'] )
                        ? $error_opts['msg_invalid']
-                       : __( 'Please enter a valid email address.', 'easysender-email-verification' );
+                       : __( 'Please enter a valid email address.', 'easydmarc-email-verification' );
         $msg_risky   = ! empty( $error_opts['msg_risky'] )
                        ? $error_opts['msg_risky']
-                       : __( 'Risky email address.', 'easysender-email-verification' );
+                       : __( 'Risky email address.', 'easydmarc-email-verification' );
         $msg_api     = ! empty( $error_opts['msg_api_error'] )
                        ? $error_opts['msg_api_error']
-                       : __( 'Verification error. Please try again.', 'easysender-email-verification' );
+                       : __( 'Verification error. Please try again.', 'easydmarc-email-verification' );
 
         // Fallback: if main helper is missing, do basic format check only.
         if ( ! function_exists( 'easysender_do_email_check' ) ) {
@@ -103,7 +103,7 @@ if ( ! function_exists( 'easysender_fluentforms_validate_email_field' ) ) {
                 } elseif ( $status !== '' ) {
                     $reason = sprintf(
                         // translators: %s: Verification status returned by the API.
-                        __( 'This email is marked as %s and is not allowed by the current rules.', 'easysender-email-verification' ),
+                        __( 'This email is marked as %s and is not allowed by the current rules.', 'easydmarc-email-verification' ),
                         $status
                     );
                 } else {

@@ -32,7 +32,7 @@ if ( ! function_exists( 'easysender_do_email_check' ) ) {
         $email = strtolower( trim( sanitize_email( $raw_email ) ) );
         if ( ! $email || ! is_email( $email ) ) {
             $errs = get_option( 'easysender_error_messages', [] );
-            $msg  = ! empty( $errs['msg_invalid'] ) ? $errs['msg_invalid'] : __( 'Invalid email address.', 'easysender-email-verification' );
+            $msg  = ! empty( $errs['msg_invalid'] ) ? $errs['msg_invalid'] : __( 'Invalid email address.', 'easydmarc-email-verification' );
             return [ 'ok' => false, 'status' => 'invalid_format', 'reason' => $msg ];
         }
 
@@ -44,7 +44,7 @@ if ( ! function_exists( 'easysender_do_email_check' ) ) {
         // 2) Auth token.
         if ( ! function_exists( 'easysender_get_access_token' ) ) {
             easysender_log_api_error( 'bootstrap', 0, 'Helper easysender_get_access_token missing' );
-            $out = [ 'ok' => false, 'status' => 'auth_error', 'reason' => __( 'Auth helper missing.', 'easysender-email-verification' ) ];
+            $out = [ 'ok' => false, 'status' => 'auth_error', 'reason' => __( 'Auth helper missing.', 'easydmarc-email-verification' ) ];
             return $allow_on_api_error ? [ 'ok' => true, 'status' => 'allowed_on_error', 'details' => $out ] : $out;
         }
 
@@ -52,7 +52,7 @@ if ( ! function_exists( 'easysender_do_email_check' ) ) {
         if ( is_wp_error( $token ) ) {
             easysender_log_api_error( 'token', 0, $token->get_error_message() );
             $errs = get_option( 'easysender_error_messages', [] );
-            $msg  = ! empty( $errs['msg_api_error'] ) ? $errs['msg_api_error'] : __( 'Verification error. Please try again.', 'easysender-email-verification' );
+            $msg  = ! empty( $errs['msg_api_error'] ) ? $errs['msg_api_error'] : __( 'Verification error. Please try again.', 'easydmarc-email-verification' );
             $out  = [ 'ok' => false, 'status' => 'auth_error', 'reason' => $msg ];
             set_transient( $dupe_key, $out, 8 );
             return $allow_on_api_error ? [ 'ok' => true, 'status' => 'allowed_on_error', 'details' => $out ] : $out;
@@ -61,7 +61,7 @@ if ( ! function_exists( 'easysender_do_email_check' ) ) {
         // 3) Verify URL.
         $verify_url = easysender_get_verify_url();
         if ( empty( $verify_url ) ) {
-            $out = [ 'ok' => false, 'status' => 'config_error', 'reason' => __( 'Verification URL is not configured.', 'easysender-email-verification' ) ];
+            $out = [ 'ok' => false, 'status' => 'config_error', 'reason' => __( 'Verification URL is not configured.', 'easydmarc-email-verification' ) ];
             set_transient( $dupe_key, $out, 8 );
             return $allow_on_api_error ? [ 'ok' => true, 'status' => 'allowed_on_error', 'details' => $out ] : $out;
         }
@@ -97,7 +97,7 @@ if ( ! function_exists( 'easysender_do_email_check' ) ) {
         if ( is_wp_error( $response ) ) {
             easysender_log_api_error( 'transport', 0, $response->get_error_message() );
             $errs = get_option( 'easysender_error_messages', [] );
-            $msg  = ! empty( $errs['msg_api_error'] ) ? $errs['msg_api_error'] : __( 'Verification error. Please try again.', 'easysender-email-verification' );
+            $msg  = ! empty( $errs['msg_api_error'] ) ? $errs['msg_api_error'] : __( 'Verification error. Please try again.', 'easydmarc-email-verification' );
             $out  = [ 'ok' => false, 'status' => 'api_error', 'reason' => $msg ];
             set_transient( $dupe_key, $out, 8 );
             return $allow_on_api_error ? [ 'ok' => true, 'status' => 'allowed_on_error', 'details' => $out ] : $out;
@@ -108,14 +108,14 @@ if ( ! function_exists( 'easysender_do_email_check' ) ) {
 
         // Credit limit.
         if ( $code === 402 ) {
-            $out = [ 'ok' => false, 'status' => 'quota', 'reason' => __( 'Verification service unavailable: credit limit reached. Please try again later.', 'easysender-email-verification' ) ];
+            $out = [ 'ok' => false, 'status' => 'quota', 'reason' => __( 'Verification service unavailable: credit limit reached. Please try again later.', 'easydmarc-email-verification' ) ];
             set_transient( $dupe_key, $out, 8 );
             return $allow_on_api_error ? [ 'ok' => true, 'status' => 'allowed_on_error', 'details' => $out ] : $out;
         }
 
         // Timeout with requestId.
         if ( $code === 408 && isset( $body['meta']['requestId'] ) ) {
-            $out = [ 'ok' => false, 'status' => 'timeout', 'reason' => __( 'Verification timed out. Please try again.', 'easysender-email-verification' ) ];
+            $out = [ 'ok' => false, 'status' => 'timeout', 'reason' => __( 'Verification timed out. Please try again.', 'easydmarc-email-verification' ) ];
             set_transient( $dupe_key, $out, 8 );
             return $allow_on_api_error ? [ 'ok' => true, 'status' => 'allowed_on_error', 'details' => $out ] : $out;
         }
@@ -141,7 +141,7 @@ if ( ! function_exists( 'easysender_do_email_check' ) ) {
 
             // Use custom/generic message for users — raw API message stays in logs only.
             $errs   = get_option( 'easysender_error_messages', [] );
-            $reason = ! empty( $errs['msg_api_error'] ) ? $errs['msg_api_error'] : __( 'Verification request failed.', 'easysender-email-verification' );
+            $reason = ! empty( $errs['msg_api_error'] ) ? $errs['msg_api_error'] : __( 'Verification request failed.', 'easydmarc-email-verification' );
 
             $out = [ 'ok' => false, 'status' => 'api_error', 'reason' => $reason, 'details' => [ 'http_code' => $code, 'api_msg' => $api_msg ] ];
             set_transient( $dupe_key, $out, 8 );
@@ -187,8 +187,8 @@ if ( ! function_exists( 'easysender_do_email_check' ) ) {
         }
 
         $errs        = get_option( 'easysender_error_messages', [] );
-        $msg_invalid = ! empty( $errs['msg_invalid'] ) ? $errs['msg_invalid'] : __( 'Invalid email address.', 'easysender-email-verification' );
-        $msg_risky   = ! empty( $errs['msg_risky'] )   ? $errs['msg_risky']   : __( 'Risky email address.', 'easysender-email-verification' );
+        $msg_invalid = ! empty( $errs['msg_invalid'] ) ? $errs['msg_invalid'] : __( 'Invalid email address.', 'easydmarc-email-verification' );
+        $msg_risky   = ! empty( $errs['msg_risky'] )   ? $errs['msg_risky']   : __( 'Risky email address.', 'easydmarc-email-verification' );
         $reason      = ( $status === 'risky' ) ? $msg_risky : $msg_invalid;
 
         $out = [ 'ok' => false, 'status' => $status, 'reason' => $reason, 'details' => $details ];

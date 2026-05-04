@@ -1,4 +1,4 @@
-/* EasySender — Usage tab: auto-load credit stats */
+/* EasyDMARC — Usage tab: auto-load credit stats */
 (function () {
     var block = document.getElementById('easysender-usage-block');
     var tiles = document.getElementById('easysender-stat-tiles');
