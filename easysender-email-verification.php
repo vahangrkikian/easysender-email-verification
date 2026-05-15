@@ -111,6 +111,7 @@ add_action('plugins_loaded', function () {
     require_once EASYSENDER_PLUGIN_DIR . 'includes/email-check.php';
     require_once EASYSENDER_PLUGIN_DIR . 'includes/csv-handler.php';
     require_once EASYSENDER_PLUGIN_DIR . 'includes/plans-data.php';
+    require_once EASYSENDER_PLUGIN_DIR . 'includes/subscription-data.php';
 
     // Admin UI & AJAX
     require_once EASYSENDER_PLUGIN_DIR . 'admin-settings.php';

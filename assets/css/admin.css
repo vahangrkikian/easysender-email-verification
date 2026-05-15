@@ -945,6 +945,78 @@
 }
 
 /* ============================================================
+   SUBSCRIPTION BLOCK OVERLAY
+   ============================================================ */
+.es-tab-content--blocked,
+.es-welcome-content--blocked {
+  position: relative;
+  overflow: hidden;
+  min-height: 400px;
+}
+.es-block-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  min-height: 400px;
+}
+.es-block-overlay__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(4px);
+  border-radius: var(--es-radius);
+}
+.es-block-overlay__card {
+  position: relative;
+  z-index: 1;
+  background: var(--es-surface);
+  border: 1px solid var(--es-border);
+  border-radius: var(--es-radius-lg, 16px);
+  box-shadow: var(--es-shadow-md);
+  padding: 48px 40px;
+  max-width: 480px;
+  text-align: center;
+}
+.es-block-overlay__icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--es-warning-50, #FFF7ED);
+  border-radius: 50%;
+  color: var(--es-warning, #D97706);
+}
+.es-block-overlay__icon svg {
+  width: 28px;
+  height: 28px;
+}
+.es-block-overlay__card h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--es-text-1, #111827);
+  margin: 0 0 8px;
+}
+.es-block-overlay__card p {
+  color: var(--es-text-2, #6B7280);
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0 0 24px;
+  max-width: 36ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+.es-block-overlay__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+/* ============================================================
    RESPONSIVE
    ============================================================ */
 @media (max-width: 782px) {

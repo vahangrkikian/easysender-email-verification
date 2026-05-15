@@ -206,6 +206,46 @@ if (!defined('EASYSENDER_VERIFY_URL')) define('EASYSENDER_VERIFY_URL', EASYSENDE
  */
 if (!defined('EASYSENDER_USAGE_URL'))  define('EASYSENDER_USAGE_URL',  EASYSENDER_API_BASE . '/api/v0.0/credit/stats');
 
+/**
+ * Render the subscription block overlay card.
+ *
+ * @param string $block_reason One of: trial_expired, trial_cancelled, no_subscription.
+ */
+function easysender_render_block_overlay( $block_reason ) {
+    $messages = [
+        'trial_expired'   => __( 'Your free trial has ended. Subscribe to a plan to continue using email verification.', 'easydmarc-email-verification' ),
+        'trial_cancelled' => __( 'Your trial was cancelled. Subscribe to a plan to continue using email verification.', 'easydmarc-email-verification' ),
+        'no_subscription' => __( 'No active subscription found. Subscribe to a plan to start verifying emails.', 'easydmarc-email-verification' ),
+    ];
+
+    $reason_text = $messages[ $block_reason ] ?? $messages['no_subscription'];
+    $upgrade_url = 'https://easydmarc.com/pricing/easysender/email-verification';
+    $api_url     = admin_url( 'admin.php?page=easysender_settings&tab=api' );
+    ?>
+    <div class="es-block-overlay">
+        <div class="es-block-overlay__backdrop"></div>
+        <div class="es-block-overlay__card">
+            <div class="es-block-overlay__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+            </div>
+            <h3><?php esc_html_e( 'Subscription Required', 'easydmarc-email-verification' ); ?></h3>
+            <p><?php echo esc_html( $reason_text ); ?></p>
+            <div class="es-block-overlay__actions">
+                <a href="<?php echo esc_url( $upgrade_url ); ?>" class="es-btn es-btn--primary" target="_blank" rel="noopener noreferrer">
+                    <?php esc_html_e( 'Upgrade Now', 'easydmarc-email-verification' ); ?>
+                </a>
+                <a href="<?php echo esc_url( $api_url ); ?>" class="es-btn es-btn--secondary">
+                    <?php esc_html_e( 'API Settings', 'easydmarc-email-verification' ); ?>
+                </a>
+            </div>
+        </div>
+    </div>
+    <?php
+}
+
 // Welcome page callback
 function easysender_welcome_page() {
     $options = get_option( 'easysender_settings', [] );
@@ -242,6 +282,10 @@ function easysender_welcome_page() {
 
     // Determine if all setup is complete
     $all_done = $has_credentials && $has_forms;
+
+    // Check subscription status for block screen.
+    $sub_status    = function_exists( 'easysender_get_subscription_status' ) ? easysender_get_subscription_status() : [ 'should_block' => false ];
+    $welcome_block = $has_credentials && ! empty( $sub_status['should_block'] );
     ?>
     <div class="wrap es-wrap">
         <h1><?php esc_html_e( 'EasyDMARC', 'easydmarc-email-verification' ); ?></h1>
@@ -260,6 +304,8 @@ function easysender_welcome_page() {
                 <a href="<?php echo esc_url( admin_url( 'admin.php?page=easysender_settings&tab=api' ) ); ?>" class="es-btn es-btn--secondary es-btn--sm"><?php esc_html_e( 'Open settings', 'easydmarc-email-verification' ); ?> &rarr;</a>
             </div>
         </header>
+
+        <div class="<?php echo $welcome_block ? 'es-welcome-content--blocked' : ''; ?>">
 
         <!-- Hero card -->
         <div class="es-card" style="background: linear-gradient(135deg, #FFFFFF 0%, #F8F9FF 100%); border-color: #E0E3FF;">
@@ -379,6 +425,11 @@ function easysender_welcome_page() {
                 <p style="margin: 0; font-size: 12.5px; color: var(--es-text-2);"><?php esc_html_e( 'API reference, integration guides, FAQ.', 'easydmarc-email-verification' ); ?></p>
             </div></a>
         </div>
+
+        <?php if ( $welcome_block ) : ?>
+            <?php easysender_render_block_overlay( $sub_status['block_reason'] ?? 'no_subscription' ); ?>
+        <?php endif; ?>
+        </div><!-- /.es-welcome-content--blocked -->
 
         <p class="es-footnote"><?php esc_html_e( 'EasyDMARC Email Verification', 'easydmarc-email-verification' ); ?> &middot; v<?php echo esc_html( defined( 'EASYSENDER_VERSION' ) ? EASYSENDER_VERSION : '1.0.0' ); ?></p>
     </div>
@@ -657,6 +708,11 @@ function easysender_settings_sanitize($input) {
         if (!isset($clean[$k])) $clean[$k] = $v;
     }
 
+    // Clear subscription cache when credentials change.
+    if ( isset( $clean['client_id'] ) || isset( $clean['client_secret'] ) ) {
+        delete_transient( 'easysender_subscriptions_cache' );
+    }
+
     return $clean;
 }
 
@@ -685,6 +741,11 @@ function easysender_settings_page() {
     }
 
     $base_url = admin_url( 'admin.php' );
+
+    // Check subscription status for block screen (never block api, documentation, or plans tabs).
+    $sub_status     = function_exists( 'easysender_get_subscription_status' ) ? easysender_get_subscription_status() : [ 'should_block' => false ];
+    $unblocked_tabs = [ 'api', 'documentation', 'plans' ];
+    $settings_block = ! empty( $sub_status['should_block'] ) && $sub_status['has_credentials'] && ! in_array( $active_tab, $unblocked_tabs, true );
 
     // SVG icons for tabs (inline, no external assets)
     $tab_icons = [
@@ -731,7 +792,7 @@ function easysender_settings_page() {
             <?php endforeach; ?>
         </nav>
 
-        <div class="es-tab-content">
+        <div class="es-tab-content <?php echo $settings_block ? 'es-tab-content--blocked' : ''; ?>">
             <?php if ( $active_tab === 'api' ) : ?>
                 <?php easysender_render_api_tab(); ?>
 
@@ -758,6 +819,10 @@ function easysender_settings_page() {
             <?php elseif ( $active_tab === 'plans' ) : ?>
                 <?php easysender_render_plans_tab(); ?>
 
+            <?php endif; ?>
+
+            <?php if ( $settings_block ) : ?>
+                <?php easysender_render_block_overlay( $sub_status['block_reason'] ?? 'no_subscription' ); ?>
             <?php endif; ?>
         </div>
 
@@ -1567,8 +1632,93 @@ function easysender_low_balance_notice() {
     echo '<div class="notice notice-warning" style="display:flex;justify-content:space-between;align-items:center;"><p><strong>' . esc_html__('EasyDMARC:', 'easydmarc-email-verification') . '</strong> ' . esc_html($message) . '</p><p><a class="button button-primary" href="' . esc_url($upgrade_url) . '" target="_blank" rel="noopener noreferrer">Upgrade Plan for More Verifications</a></p></div>';
 }
 
+// Warn admins when trial subscription is about to expire.
+add_action( 'admin_notices', 'easysender_trial_ending_notice' );
+function easysender_trial_ending_notice() {
+    if ( ! current_user_can( 'manage_options' ) || ! is_admin() ) {
+        return;
+    }
+    if ( ! function_exists( 'easysender_get_subscription_status' ) ) {
+        return;
+    }
 
+    $status = easysender_get_subscription_status();
+    if ( ! $status['has_active_trial'] ) {
+        return;
+    }
 
+    /**
+     * Filter the number of days before trial expiry to start showing a warning.
+     *
+     * @param int $days Default 7.
+     */
+    $threshold = (int) apply_filters( 'easysender_trial_warning_days', 7 );
+    if ( $status['trial_days_left'] === null || $status['trial_days_left'] > $threshold ) {
+        return;
+    }
+
+    $days_left   = max( 0, $status['trial_days_left'] );
+    $upgrade_url = 'https://easydmarc.com/pricing/easysender/email-verification';
+
+    if ( $days_left === 0 ) {
+        $message = __( 'Your EasyDMARC trial expires today. Upgrade now to keep verifying emails.', 'easydmarc-email-verification' );
+    } elseif ( $days_left === 1 ) {
+        $message = __( 'Your EasyDMARC trial expires tomorrow. Upgrade now to keep verifying emails.', 'easydmarc-email-verification' );
+    } else {
+        /* translators: %d: number of days until trial expires */
+        $message = sprintf( __( 'Your EasyDMARC trial expires in %d days. Upgrade to keep verifying emails.', 'easydmarc-email-verification' ), $days_left );
+    }
+
+    echo '<div class="notice notice-warning" style="display:flex;justify-content:space-between;align-items:center;">'
+        . '<p><strong>' . esc_html__( 'EasyDMARC:', 'easydmarc-email-verification' ) . '</strong> '
+        . esc_html( $message ) . '</p>'
+        . '<p><a class="button button-primary" href="' . esc_url( $upgrade_url ) . '" target="_blank" rel="noopener noreferrer">'
+        . esc_html__( 'Upgrade Plan', 'easydmarc-email-verification' ) . '</a></p></div>';
+}
+
+// Warn admins when paid subscription is about to expire.
+add_action( 'admin_notices', 'easysender_plan_ending_notice' );
+function easysender_plan_ending_notice() {
+    if ( ! current_user_can( 'manage_options' ) || ! is_admin() ) {
+        return;
+    }
+    if ( ! function_exists( 'easysender_get_subscription_status' ) ) {
+        return;
+    }
+
+    $status = easysender_get_subscription_status();
+    if ( ! $status['has_active_plan'] ) {
+        return;
+    }
+
+    /**
+     * Filter the number of days before plan expiry to start showing a warning.
+     *
+     * @param int $days Default 14.
+     */
+    $threshold = (int) apply_filters( 'easysender_plan_warning_days', 14 );
+    if ( $status['plan_days_left'] === null || $status['plan_days_left'] > $threshold ) {
+        return;
+    }
+
+    $days_left   = max( 0, $status['plan_days_left'] );
+    $upgrade_url = 'https://easydmarc.com/pricing/easysender/email-verification';
+
+    if ( $days_left === 0 ) {
+        $message = __( 'Your EasyDMARC subscription expires today. Renew now to avoid interruption.', 'easydmarc-email-verification' );
+    } elseif ( $days_left === 1 ) {
+        $message = __( 'Your EasyDMARC subscription expires tomorrow. Renew now to avoid interruption.', 'easydmarc-email-verification' );
+    } else {
+        /* translators: %d: number of days until subscription expires */
+        $message = sprintf( __( 'Your EasyDMARC subscription expires in %d days. Renew to avoid interruption.', 'easydmarc-email-verification' ), $days_left );
+    }
+
+    echo '<div class="notice notice-warning" style="display:flex;justify-content:space-between;align-items:center;">'
+        . '<p><strong>' . esc_html__( 'EasyDMARC:', 'easydmarc-email-verification' ) . '</strong> '
+        . esc_html( $message ) . '</p>'
+        . '<p><a class="button button-primary" href="' . esc_url( $upgrade_url ) . '" target="_blank" rel="noopener noreferrer">'
+        . esc_html__( 'Renew Subscription', 'easydmarc-email-verification' ) . '</a></p></div>';
+}
 
 // Add logo overlay markup & styles on plugin admin pages
 add_action('admin_footer', 'easysender_add_logo_overlay');
@@ -1658,6 +1808,7 @@ function easysender_verify_api_key() {
         // Clear any cached token so the new credentials take effect immediately
         $id_hash = substr( md5( $client_id ), 0, 10 );
         delete_transient( 'easysender_access_token_' . $id_hash );
+        delete_transient( 'easysender_subscriptions_cache' );
 
         wp_send_json_success( array( 'message' => __( 'Credentials verified and saved.', 'easydmarc-email-verification' ) ) );
     }
